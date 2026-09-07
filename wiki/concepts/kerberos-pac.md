@@ -89,7 +89,9 @@ Get-DomainObject -Identity "KRBTGT" -Properties *   # krbtgt is always a signer
 ## Links
 
 - [[pkinit-unpac-the-hash]] — PAC_CREDENTIAL_INFO → NT hash recovery
-- [[golden-silver-tickets]], [[diamond-ticket]] — forged tickets must carry a valid-looking PAC
+- [[golden-silver-tickets]], [[diamond-ticket]], [[sapphire-ticket]] — forged tickets must carry a valid-looking PAC (Sapphire injects a real one)
+- [[ms14-068]] — the classic PAC-signature-validation forgery (CVE-2014-6324)
+- [[nopac]] — sAMAccountName spoofing → S4U2self ticket as a DC (CVE-2021-42287)
 - [[kerberos-authentication]] — where the PAC sits in the TGT/TGS flow
 - [[krbtgt]] — a default PAC signer
 - [[pass-the-key]] — fresh tickets carry a KDC-signed PAC (why PtK is quieter)

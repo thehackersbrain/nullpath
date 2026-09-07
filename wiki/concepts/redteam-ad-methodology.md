@@ -83,3 +83,6 @@ flow doubles as the checklist for validating that hardening.
 - [[ticket-and-credential-opsec]] — handling tickets and loot
 - [[reverse-engineering-workflow]] — the RE/malware-domain analog of this arc (static → dynamic → detection)
 - [[windows-privilege-escalation]] — the local (on-box) privesc step that runs between foothold and the domain phases above
+- [[foothold-playbook]] — the condensed "you hold X → do Y next" version of these phases
+- [[ad-error-decoder]] — when a step throws an error, decode it (the failure is the hint)
+- [[ticket-manipulation]] — the kirbi/ccache/PtT plumbing the lateral phases lean on

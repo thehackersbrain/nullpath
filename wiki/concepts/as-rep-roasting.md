@@ -101,6 +101,8 @@ Rubeus.exe asrep /user:targetsvc /rc4 /nowrap
 ## Links
 
 - [[kerberos-preauth]] — the pre-auth mechanism this disables (and the UAC bit)
+- [[targeted-roasting]] — *creating* the roastable condition via a GenericWrite on the victim's UAC bit
+- [[kerberos-armoring-fast]] — the defense that (enforced) kills this attack
 - [[kerberoasting]] — the TGS-stage sibling (same offline-crack game)
 - [[kerberos-authentication]] — the AS-REQ/AS-REP stage this rides
 - [[kerberos-encryption-types]] — the RC4 (0x17) you're cracking

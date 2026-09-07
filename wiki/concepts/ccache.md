@@ -103,7 +103,8 @@ ticket → PtT), [[golden-silver-tickets]] (forged ticket), and [[pass-the-key]]
 - [[pass-the-hash-and-ticket]] — the PtT workflow (use a stolen ccache)
 - [[golden-silver-tickets]] — forging a TGT/TGS into a ccache
 - [[pass-the-key]] — key → fresh legit TGT (no forgery)
-- [[diamond-ticket]] — the AES128-krbtgt TGT variant in a ccache
+- [[ticket-manipulation]] — the kirbi↔ccache conversion + PtT one-liner cheat-sheet
+- [[diamond-ticket]] — the modify-a-real-TGT forgery (loaded into a ccache)
 - [[pkinit-unpac-the-hash]] — reading the NT hash out of the TGT PAC
 - [[kerberos-encryption-types]] — the etype of the keys in the cache
 - [[krbtgt]] — the secret a Golden ccache is forged with

@@ -64,6 +64,32 @@ Rotation defeats *offline cracking of a stale key*, but a gMSA is still a
 **live, privileged identity** with an **SPN** and a **cached key**. The
 gMSA-specific attack surface:
 
+### Read the managed password over LDAP (the canonical "gMSA dumper" path)
+
+The gMSA's **current** secret is exposed as the computed attribute
+**`msDS-ManagedPassword`** (an `MSDS-MANAGEDPASSWORD_BLOB`), readable over LDAP
+**only** by the principals in the gMSA's **`msDS-GroupMSAMembership`** set
+(a.k.a. *PrincipalsAllowedToRetrieveManagedPassword*). If you control such a
+principal — **or can *write* `msDS-GroupMSAMembership`** to add one you control
+([[acl-abuse]]; BloodHound's `ReadGMSAPassword` / `AddSelf` edges) — you read the
+blob and derive the **current NT hash and Kerberos keys directly: no LSASS, no
+DCSync, no cracking, no waiting for a rollover.** Because the read tracks every
+rotation, retaining that access is also **persistence**. This is what the
+dedicated **gMSA dumpers** do ([[gmsadumper]]):
+
+```bash
+gMSADumper.py -u user -p pass -d corp.local             # micahvandeusen/gMSADumper
+nxc ldap dc01 -u user -p pass --gmsa                     # NetExec built-in
+bloodyAD -u user -p pass -d corp.local get object 'svc_gmsa$' --attr msDS-ManagedPassword
+```
+```powershell
+# On-host: RSAT + DSInternals to decode the blob to an NT hash
+Get-ADServiceAccount svc_gmsa -Properties msDS-ManagedPassword |
+  ForEach-Object { ConvertFrom-ADManagedPasswordBlob $_.'msDS-ManagedPassword' }
+```
+
+The **other** paths (when you're *not* in the retrieval set):
+
 1. **Crack the *current* key before it rolls** — pull the TGS
    ([[kerberoasting]]) or the AS-REP and race the rollover window. Short
    interval = smaller window; default intervals leave minutes-to-an-hour of
@@ -117,7 +143,9 @@ relying on rotation.
 
 ## Links
 
+- [[gmsadumper]] — the tool that reads `msDS-ManagedPassword` over LDAP → NT hash
 - [[service-account]] — the account types (gMSA is the managed variant)
+- [[acl-abuse]] — writing `msDS-GroupMSAMembership` to grant yourself the read
 - [[kerberoasting]] — the primary attack gMSA mitigates
 - [[as-rep-roasting]] — the sibling cracking attack
 - [[golden-silver-tickets]] — the Silver Ticket forgery gMSA mitigates

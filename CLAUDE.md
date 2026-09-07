@@ -74,6 +74,18 @@ non-consenting targets.
   technique's own page** (e.g. a `## Red-team notes (OPSEC)` section that ties
   into that page's own Detection section), *not* as separate "ops" pages. If a
   page only explains how something works in principle, it isn't finished.
+- **Practical-first, always.** Lead with what you'd actually *run*, not with
+  protocol prose. Every technique/protocol/tool page earns its keep with
+  **dense, copy-pasteable commands** — real filters, flags, and one-liners
+  (`ldapsearch`/`nxc`/Impacket/Rubeus/Certipy/`bloodyAD`, by context) — plus the
+  field **tips, gotchas, and "if X fails try Y"** that only come from running it
+  (clock skew, FQDN-not-IP, `MAQ=0`, revert-the-attribute, enctype mismatch).
+  Keep the mechanism explanation only as long as needed to *use* the technique;
+  cut theory that doesn't change what the operator does. The connective
+  field-craft is first-class content, not an afterthought: the error→cause→fix
+  decoder, the "you hold X → do Y next" playbooks, and the command cheat-sheets
+  are among the most valuable pages here. When a page reads like a textbook, add
+  the commands and trim the exposition.
 
 ## Directory layout
 
@@ -116,6 +128,12 @@ create new top-level categories under `wiki/` and document them here.
 
 - Use `[[wikilink]]`-style links (Obsidian format) to cross-reference pages
   by filename (without extension).
+- **Practical-density check** — a technique/protocol/tool page isn't done until
+  it has a real `## Commands` (or quick-reference) block of copy-pasteable
+  one-liners, a `## Red-team notes (OPSEC)` section, and a `## Detection`
+  section. Prose-only pages fail this check — add the commands. Fundamentals/
+  explainer pages still carry the enumeration/abuse one-liners that make them
+  actionable. Prefer denser command coverage over more paragraphs.
 - Keep pages focused. If a page grows unwieldy, split it and link.
 - When new information contradicts or supersedes an old claim, don't just
   overwrite silently — note it explicitly (e.g. "Update YYYY-MM-DD:
@@ -267,7 +285,11 @@ When asked to "lint" or health-check the wiki:
    page.
 5. Suggest missing cross-references.
 6. Suggest gaps that could be filled with new sources or web searches.
-7. Report findings to the user; don't make large changes without checking
+7. Flag **theory-heavy / command-light pages** — any technique/protocol/tool
+   page that's prose-only or missing its `## Commands`, `## Red-team notes
+   (OPSEC)`, or `## Detection` block (the practical-density check above). These
+   get denser commands/tips, not more exposition.
+8. Report findings to the user; don't make large changes without checking
    in first.
 
 ## Notes for the agent

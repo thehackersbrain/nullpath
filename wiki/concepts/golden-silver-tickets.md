@@ -42,10 +42,11 @@ flow and [[tgt-tgs]] for what each ticket is.
 - **The RC4 downgrade signal** — forging with the NTLM hash produces an
   **RC4 (0x17) TGT**, which is a detection signal (a DA usually authenticates
   with AES). Forging with the **AES256 key** avoids that tell.
-- **The diamond variant** — the [[diamond-ticket]] (forging with the
-  **AES128** key) is the *rotation-resistant* downgrade: after a `krbtgt`
-  rotation the KDC still accepts the *previous* key for ~10h, so an
-  AES128-forged TGT can outlive a rotation. See [[diamond-ticket]].
+- **The diamond variant** — a [[diamond-ticket]] doesn't forge from scratch: it
+  **requests a real TGT, decrypts it with the `krbtgt` key, edits the PAC, and
+  re-signs it**. The real KDC-issued lifetime/structure make it far less
+  anomalous than a Golden (the enctype is orthogonal — build it with whatever
+  `krbtgt` key you hold). See [[diamond-ticket]].
 
 ### Creating + using a Golden Ticket
 
@@ -107,8 +108,9 @@ The end-to-end chain: [[path-silver-ticket-to-local-admin]].
   validation ([[kerberos-pac]]); modern tooling (ticketer/mimikatz) does this,
   but don't hand-forge sloppy group SIDs.
 - **Consider a [[diamond-ticket]] instead of a Golden** — modifying a *real*
-  TGT (AES128) rather than minting one from scratch survives a single krbtgt
-  rotation and looks far less anomalous.
+  KDC-issued TGT rather than minting one from scratch gives legitimate ticket
+  times/structure and a real matching 4768, so it looks far less anomalous. For
+  the least-detectable option, [[sapphire-ticket]] injects a real privileged PAC.
 - **Inject in memory, purge after** — `/ptt` (Windows) or a [[ccache]] over
   the tunnel; `klist purge` / `kdestroy` on the way out. See
   [[pass-the-hash-and-ticket]] for the PtT transport.
@@ -148,7 +150,7 @@ The end-to-end chain: [[path-silver-ticket-to-local-admin]].
 
 - [[krbtgt]] — the secret a Golden Ticket is signed with
 - [[dcsync]] — the standard way to obtain the `krbtgt`/service secrets
-- [[diamond-ticket]] — the rotation-resistant AES128 Golden variant
+- [[diamond-ticket]] — the stealthier variant that modifies a *real* TGT's PAC
 - [[sapphire-ticket]] — the stealthiest variant (embeds a *real* privileged PAC via S4U2self)
 - [[trust-key-abuse]] — the inter-realm form: forge a *trust ticket* across a domain/forest trust
 - [[kerberos-pac]] — the PAC a Silver must carry (and can fake)

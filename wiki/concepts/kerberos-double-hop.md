@@ -127,3 +127,4 @@ the double-hop evaporates:
 - Delegation-based fixes/abuses: [[kerberos-delegation]],
   [[unconstrained-delegation]], [[resource-based-constrained-delegation]],
   [[s4u2self-s4u2proxy]].
+- Ticket plumbing / errors: [[ticket-manipulation]], [[ad-error-decoder]].

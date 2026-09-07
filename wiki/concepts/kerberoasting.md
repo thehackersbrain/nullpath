@@ -107,6 +107,7 @@ mitigation in this wiki.
 - [[path-kerberoast-to-domain-admin]] — the end-to-end chain
 - [[as-rep-roasting]] — the sibling attack (AS-REP, no TGS needed)
 - [[timeroasting]] — the *unauthenticated* sibling that roasts **computer**-account passwords via MS-SNTP
+- [[targeted-roasting]] — *making* a no-SPN user roastable via a GenericWrite (set an SPN, roast, revert)
 - [[acl-abuse]] — what the cracked service account's rights give you
 - [[bloodhound]] — `hasSPN` enumeration
 - [[krbtgt]] — the *TGT*-forgery key (contrast: krbtgt is domain-wide, a TGS

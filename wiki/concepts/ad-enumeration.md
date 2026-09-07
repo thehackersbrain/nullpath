@@ -127,3 +127,4 @@ wmiexec.py corp.local/user@10.0.0.20 -hashes :NT   # quieter, PtH
 - Next steps this feeds: [[password-spraying]], [[kerberoasting]],
   [[as-rep-roasting]], [[ad-cs-esc-attacks]], [[remote-execution]].
 - Tools: [[netexec]], [[certipy]], [[impacket]], [[kerbrute]], [[bloodhound]], [[rusthound]].
+- Next: [[foothold-playbook]] (what to do with what you found); [[ad-error-decoder]] (when a command errors).

@@ -67,6 +67,33 @@ samrdump.py <target>                                            # SAM lookup
 lookupsid.py <target>                                            # SID resolution
 ```
 
+### Raw ldapsearch filters (the grab-bag you actually run)
+
+The attacker filters, straight over LDAP — the `:1.2.840.113556.1.4.803:` is the
+**bitwise-AND** matching rule for `userAccountControl` bits:
+
+```bash
+B='DC=corp,DC=local'; H=ldap://10.0.0.10; D='corp\user'; P='pass'
+q(){ ldapsearch -x -LLL -H "$H" -D "$D" -w "$P" -b "$B" "$@"; }
+
+q '(&(objectCategory=user)(servicePrincipalName=*))' sAMAccountName servicePrincipalName   # kerberoastable
+q '(&(objectCategory=user)(userAccountControl:1.2.840.113556.1.4.803:=4194304))' sAMAccountName  # AS-REP roastable (DONT_REQ_PREAUTH)
+q '(userAccountControl:1.2.840.113556.1.4.803:=524288)' dNSHostName        # unconstrained delegation (TRUSTED_FOR_DELEGATION)
+q '(msDS-AllowedToDelegateTo=*)' sAMAccountName msDS-AllowedToDelegateTo    # constrained delegation
+q '(userAccountControl:1.2.840.113556.1.4.803:=32)' sAMAccountName          # PASSWD_NOTREQD (empty-password logon)
+q '(userAccountControl:1.2.840.113556.1.4.803:=2)' sAMAccountName           # ACCOUNTDISABLE
+q '(adminCount=1)' sAMAccountName                                           # AdminSDHolder-protected (Tier-0-ish)
+q '(&(objectClass=computer)(ms-Mcs-AdmPwd=*))' name ms-Mcs-AdmPwd           # readable LAPS ([[laps]])
+q '(objectClass=msDS-GroupManagedServiceAccount)' sAMAccountName msDS-GroupMSAMembership  # gMSAs ([[gmsadumper]])
+q '(objectClass=trustedDomain)' trustPartner trustDirection trustAttributes # trusts ([[ad-trusts]])
+ldapsearch -x -LLL -H "$H" -D "$D" -w "$P" -s base -b "$B" ms-DS-MachineAccountQuota   # MAQ (RBCD/noPac gate)
+```
+
+Tips: add `-o ldif-wrap=no` to stop line-wrapping; use `ldaps://` (636) when the
+DC enforces channel binding; `-Y GSSAPI` (with `$KRB5CCNAME`) for a Kerberos
+bind when simple bind is refused ([[ad-error-decoder]]). `nxc ldap ... -M <mod>`
+wraps most of these — see [[ad-enumeration]].
+
 ## The relay target (why LDAP is where RBCD lands)
 
 When an attacker relays a coerced NTLM to **LDAP/LDAPS**, the coerced account's

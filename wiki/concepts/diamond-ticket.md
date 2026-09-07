@@ -2,86 +2,116 @@
 title: Diamond Ticket
 type: concept
 created: 2026-09-06
-updated: 2026-09-06
+updated: 2026-09-07
 tags: [kerberos, active-directory, ticket-forgery, privilege-escalation]
 ---
 
 # Diamond Ticket
 
-A variant of the [[golden-silver-tickets|Golden Ticket]] that forges the TGT
-using the **AES128** key of `krbtgt` instead of the usual AES256. It is a
-*downgrade* forgery (see [[kerberos-encryption-types]]) and is valuable for
-two reasons:
+A **Diamond Ticket** is a stealthier cousin of the
+[[golden-silver-tickets|Golden Ticket]]: instead of **forging a TGT from
+scratch**, you **request a *real* TGT from the KDC, decrypt it with the
+`krbtgt` key, modify its PAC** (e.g. add the Domain Admins SID), and
+**re-encrypt/re-sign it** with the same key. The result is a forged TGT built on
+a **genuine, KDC-issued ticket** — correct lifetime, correct structure, a
+real-looking PAC — which defeats the anomaly detections that catch Golden
+Tickets minted entirely offline.
 
-1. **Rotation resistance.** After a `krbtgt` password rotation, AD retains
-   the *previous* password for ~10 hours (the KDC validates against current
-   + previous keys). A TGT signed with the **old AES128** key can stay valid
-   across a rotation window where an AES256-built Golden Ticket's validity
-   assumptions are re-examined. Combined with the fact that many domains
-   still have the AES128 key present, a Diamond Ticket is more durable than
-   a standard Golden Ticket.
-2. **Detection avoidance.** Most "forged ticket" detections key off unusual
-   **lifetime** or RC4 (`0x17`) usage. AES128 (`0x11`) is a legitimate, common
-   enctype, so a Diamond Ticket blended into a domain that also uses AES128
-   is quieter than an RC4 Golden Ticket.
+> **Correction (2026-09-07):** an earlier version of this page framed a Diamond
+> Ticket as an *AES128 downgrade forgery*. That was inaccurate. The enctype is
+> **orthogonal** — a Diamond can be built with whatever `krbtgt` key you hold
+> (RC4/AES128/AES256). The defining property is **modifying a real TGT** rather
+> than the key size. **Golden = forge from nothing; Diamond = modify a real
+> TGT's PAC; [[sapphire-ticket|Sapphire]] = Diamond, but inject a *real*
+> privileged PAC pulled via S4U2self.**
+
+## Why it's stealthier than a Golden Ticket
+
+Golden Tickets are minted offline, so they tend to carry tells: a **default /
+over-long lifetime**, a **hand-built PAC** with only the required fields or an
+odd group list, timestamps that don't line up with a real logon. A Diamond
+Ticket starts from a **legitimately issued TGT**, so:
+
+- The **ticket times and structure are what the KDC actually produces** — no
+  "10-year TGT" anomaly.
+- The **PAC is a real one you edited**, not a fabricated shell — fewer
+  size/field anomalies (though the *edit* itself, the injected SID, is still the
+  thing detection can look for).
+- There is a matching **4768 (AS-REQ)** on the DC, because you *did* request a
+  real TGT — a Golden has no corresponding AS-REQ.
 
 ## Prerequisites
 
-- The `krbtgt` **AES128** key — from [[dcsync]] (`secretsdump.py` /
-  `lsadump::dcsync` shows `aes128-cts-hmac-sha1-96`), or an `ntds.dit` dump.
-- The domain SID and the target user SID.
+- The **`krbtgt` key** (RC4 hash or AES128/AES256) — from [[dcsync]] or an
+  offline [[ntds-dit]] dump.
+- **Valid domain credentials** for *some* account (you need to request the real
+  TGT that you then modify) — a low-priv user is fine.
+- The domain SID and the target user/group SIDs to inject.
 
 ## Commands
 
 ```powershell
-# Rubeus — build a TGT signed with the AES128 key
-Rubeus.exe asktgt /user:Administrator /domain:corp.local /rc4:<nt> /aes128:<32-hex> /aes256:<64-hex> /sids:S-1-5-21-...:512 /ptt
-# (the /aes128 key is what the PAC/TGT is actually signed with in a Diamond build)
+# Rubeus has a dedicated `diamond` action: request a real TGT as a low-priv
+# user, decrypt with the krbtgt key, rewrite the PAC to Administrator + DA, re-sign.
+Rubeus.exe diamond /krbkey:<krbtgt-aes256-key> /enctype:aes ^
+  /user:lowpriv /password:'LowPass' /domain:corp.local ^
+  /ticketuser:Administrator /ticketuserid:500 /groups:512 /ptt
 ```
 
+```bash
+# Impacket ticketer with -request builds the same idea: it requests a real TGT
+# first, then modifies it (vs. a pure offline forge without -request):
+ticketer.py -request -user lowpriv -password 'LowPass' \
+  -nthash <krbtgt-nthash> -domain-sid S-1-5-21-... -domain corp.local Administrator
 ```
-# Mimikatz
-kerberos::golden /user:Administrator /domain:corp.local /sid:S-1-5-21-... /aes128:<32-hex> /ptt
-```
 
-**Verify:** `Rubeus.exe triage` shows the TGT; `whoami /all` lists
-`corp.local\administrator` plus the `512` (Domain Admins) group SID if you
-stuffed `/sids`.
+**Verify:** `Rubeus.exe triage` / `klist` shows the TGT; `whoami /all` lists
+`corp.local\Administrator` plus the injected `512` (Domain Admins) group SID.
 
-## Why "Diamond"
+## Where it sits among the forgeries
 
-SpecterOps named it for the downgrade path: you take a *higher*-security
-domain (AES256) and mint a ticket using the *lower* (AES128) key that is
-still honored — a downgrade that persists. See the [[ad-cs-esc-attacks]]-style
-"weaker path still valid" theme.
+- **[[golden-silver-tickets|Golden]]** — TGT forged from scratch with `krbtgt`.
+  Most flexible, most anomalous.
+- **Diamond** — a *real* TGT with an edited PAC. Stealthier structure/lifetime.
+- **[[sapphire-ticket|Sapphire]]** — a Diamond whose injected PAC is a **real
+  privileged user's PAC** obtained via S4U2self — the least detectable, since the
+  PAC itself is genuine.
+
+All three need the `krbtgt` key and are **post-DA persistence/impersonation**
+primitives, not privilege escalations.
 
 ## Detection
 
-- **Event 4768** with a TGT encrypted `aes128-cts-hmac-sha1-96` (`0x11`) on a
-  domain that policy-forces AES256 — an AES128 TGT is anomalous.
-- A TGT whose lifetime exceeds the domain max, *signed with AES128* — pairs
-  the classic Golden Ticket tell with the Diamond downgrade.
-- Correlate with the `krbtgt` rotation window: an AES128 TGT that keeps working
-  *after* a rotation is a strong Diamond Ticket indicator.
+- The **injected SID is the tell**, not the ticket shape: a TGT/PAC for an
+  account that now claims Domain Admins (or another group it isn't really in) —
+  correlate group membership in the PAC against the real directory.
+- **Behavioral**: a DA-privileged ticket in use from a non-Tier-0 host; a
+  low-priv account that requested a normal TGT (4768) then suddenly wields
+  DA rights.
+- Diamond deliberately **avoids the lifetime/structure anomalies** used against
+  Golden, so lean on the SID/behavioral signals and on the **`krbtgt`
+  acquisition** ([[dcsync]] / offline [[ntds-dit]] dump) that had to precede it.
 
 ## Mitigations
 
-- Rotate `krbtgt` **twice** (see [[krbtgt]]) — invalidates old-key tickets.
-- Enforce **AES256-only** for `krbtgt` / domain-wide where possible
-  ([[kerberos-encryption-types]]), removing the AES128 key the attack relies on.
-- Alert on AES128 TGTs (`0x11`) for privileged accounts.
+- **Rotate `krbtgt` twice** ([[krbtgt]]) — invalidates all tickets signed with
+  the compromised key, Diamond included.
+- **Disable RC4** and enforce AES ([[kerberos-encryption-types]]) — narrows the
+  keys an attacker can forge with and makes an RC4 build stand out.
+- Detect and alert on the **replication (DCSync)** that grabs `krbtgt` in the
+  first place — the acquisition is the loud, catchable step.
 
 ## Links
 
-- [[golden-silver-tickets]] — the base Golden/Silver forgery this extends
-- [[sapphire-ticket]] — the stealthier sibling: same "modify a real TGT" idea, but injects a **real** privileged PAC via S4U2self
-- [[krbtgt]] — the account whose AES128 key is the primitive
-- [[kerberos-encryption-types]] — the RC4/AES128/AES256 downgrade context
-- [[dcsync]] — how you obtain the `krbtgt` AES128 key
-- [[kerberos-pac]] — the PAC the forged TGT must carry valid group SIDs
+- [[golden-silver-tickets]] — the base forgery Diamond refines (forge-from-scratch)
+- [[sapphire-ticket]] — the stealthier sibling (injects a *real* PAC via S4U2self)
+- [[krbtgt]] — the key used to decrypt/re-sign the real TGT
+- [[kerberos-encryption-types]] — enctypes (orthogonal to Diamond, contra the old framing)
+- [[dcsync]] — how you obtain the `krbtgt` key
+- [[kerberos-pac]] — the PAC you edit inside the real ticket
 
 ## References
 
 - [SpecterOps: The Diamond Ticket](https://posts.specterops.io/the-diamond-ticket-e38455777635)
-- [Rubeus (GhostPack) — asktgt](https://github.com/GhostPack/Rubeus)
+- [Rubeus (GhostPack) — diamond](https://github.com/GhostPack/Rubeus)
 - [ired.team: Kerberos ticket forging](https://www.ired.team/active-directory-kerberos-abuse/kerberos-attacks)

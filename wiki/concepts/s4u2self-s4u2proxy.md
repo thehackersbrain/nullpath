@@ -111,6 +111,7 @@ Rubeus.exe s4u /proxy /user:victim /service:cifs/target.corp.local /rc4
 - [[pass-the-hash-and-ticket]] — the captured TGT/TGS (PtT) the S4U flow exposes
 - [[ntlm-relay-coercion]] — how the victim is coerced to present their TGT
 - [[bronze-bit]] — CVE-2020-17049: flip the S4U2self forwardable bit to defeat Protected Users / "sensitive" flags
+- [[nopac]] — CVE-2021-42287: S4U2self on a DC-renamed machine account → a ticket as the DC
 - [[sapphire-ticket]] — uses S4U2self to pull a real privileged PAC into a forged TGT
 
 ## References

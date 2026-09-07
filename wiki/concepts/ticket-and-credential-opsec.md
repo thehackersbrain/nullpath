@@ -62,6 +62,8 @@ hardening via [[kerberos-encryption-types]]).
 ## See also
 
 - [[ccache]] — the Linux ticket cache format
+- [[ticket-manipulation]] — the full kirbi↔ccache / PtT / triage command cheat-sheet
+- [[ad-error-decoder]] — decode the Kerberos errors these commands throw
 - [[redteam-ad-methodology]] — where this sits in the flow
 - [[c2-and-pivoting-ad]] — moving tickets over the tunnel
 - [[pass-the-hash-and-ticket]] — the reuse primitives you're handling

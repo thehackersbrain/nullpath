@@ -555,3 +555,105 @@ NOTE: [[diamond-ticket]] frames Diamond as an AES128 *downgrade*, which is off
 from the standard definition (Diamond = decrypt/modify a real TGT's PAC) — flagged
 for correction, not yet rewritten. Two false-positive auto-mode safety blocks hit
 Bash writes mid-batch; completed via Read/Edit/Write tools.
+
+## [2026-09-07] ingest | Exhaustive Kerberos pass: hub refresh + noPac/MS14-068/targeted-roast/FAST
+
+User wanted Kerberos coverage exhaustive. Assessment: the *technique* pages were
+already deep, but the **hub was stale** (kerberos-authentication last touched
+2026-06-13, missing ~20 pages, attack table still pointing at source pages) and a
+few canonical attacks were absent. **Rewrote [[kerberos-authentication]]** into a
+full attack map — roasting / forgery / credential-reuse / delegation / PKINIT /
+relay-persistence-gotchas tables linking every current concept page, plus shared
+detection + defense sections. **Added 5 concept pages:** [[nopac]]
+(CVE-2021-42278+42287 sAMAccountName spoofing — add computer, rename to DC,
+S4U2self → ticket as DC → DCSync; noPac.py; MAQ/patch prereqs), [[targeted-roasting]]
+(ACL-driven: set an SPN → Kerberoast, or flip DONT_REQ_PREAUTH → AS-REP, then
+revert; plus U2U no-SPN roast and CVE-2022-33679 no-preauth folded in as
+sections), [[ms14-068]] (CVE-2014-6324 PAC forgery — the historical ancestor;
+PyKEK/goldenPac), [[kerberos-armoring-fast]] (FAST: kills AS-REP roast + pre-auth
+brute when enforced, does NOT stop Kerberoast/Timeroast; enforcement-gap
+downgrade). Wired backlinks: kerberoasting → targeted-roasting; as-rep-roasting →
+targeted-roasting + kerberos-armoring-fast; s4u2self-s4u2proxy → nopac;
+kerberos-pac → ms14-068/nopac/sapphire-ticket. Index updated (5 concepts).
+Taxonomy: nopac + ms14-068 → Forgery; targeted-roasting → Credential Access;
+kerberos-armoring-fast → Fundamentals. (Build not run this session — Bash
+classifier-blocked; needs `npm run build` to verify.)
+
+## [2026-09-07] fix | Diamond-ticket definition corrected + gMSA managed-password read/dumper
+
+Corrected the standing [[diamond-ticket]] error: rewrote the page to define a
+Diamond as **request a real TGT → decrypt with krbtgt → edit the PAC →
+re-sign** (stealth via genuine KDC-issued lifetime/structure + a matching 4768),
+with an explicit "Correction (2026-09-07)" note that the enctype is orthogonal
+(the old "AES128 downgrade / rotation-resistant" framing was wrong). Fixed the
+inherited claims in [[golden-silver-tickets]] (the "diamond variant" paragraph,
+the OPSEC bullet, the Links line) and the mis-framed [[tgt-tgs]] table row (was
+"trust secret via DCShadow/Enterprise → diamond"; now a correct Diamond row +
+a separate [[trust-key-abuse]] inter-realm row). Rubeus `diamond` / ticketer
+`-request` commands added.
+
+Filled a gMSA gap surfaced by the user: [[gmsa]] covered LSASS/DCSync/ACL-reset
+but not the **LDAP managed-password read** — the canonical "gMSA dumper" path.
+Added a "Read the managed password over LDAP" section (read `msDS-ManagedPassword`
+if in / can write `msDS-GroupMSAMembership`; BloodHound ReadGMSAPassword/AddSelf;
+→ current NT hash, no LSASS/DCSync/crack; auto-updates = persistence) and a new
+[[gmsadumper]] entity (gMSADumper.py + `nxc ldap --gmsa` + bloodyAD + DSInternals
+blob decode). Wired: gmsa → gmsadumper/acl-abuse; index Tools + gmsa Links.
+
+## [2026-09-07] update | bloodyAD entity + ACL/DACL edge completeness
+
+User flagged thin bloodyAD/DACL coverage. [[acl-abuse]] was already a solid hub
+(GenericAll/WriteDacl/WriteOwner/GenericWrite + dacledit/owneredit/PowerView),
+but bloodyAD had no page and two edges weren't spelled out. Added [[bloodyad]]
+entity (CravateRouge — Linux LDAP/SAMR AD framework: `get writable` recon, and
+the write primitives set-password / add-groupMember / add-dcsync / add-rbcd /
+add-shadowCredentials / add-computer / add-uac / set-owner, each with a `remove`
+for revert; the one-tool-whole-chain interface that supersedes stitching
+dacledit+owneredit+addcomputer+pywhisker+rbcd). Enriched [[acl-abuse]]: added
+**ForceChangePassword** (narrow reset-only extended right) and
+**AllExtendedRights** (bundles ForceChangePassword + LAPS/gMSA read + the
+**DS-Replication → DCSync** grant on the domain head — the top WriteDacl-on-domain
+→ add-dcsync chain), plus a bloodyAD command block. Wired: acl-abuse →
+bloodyad/dcsync/shadow-credentials/targeted-roasting/gmsadumper/laps;
+gmsadumper + targeted-roasting → bloodyad (inline mentions linked). Index Tools
+updated.
+
+## [2026-09-07] ingest | Field-craft layer: error decoder + foothold playbook + ticket cheat-sheet
+
+User pushed on theory-vs-practice. Assessment (evidence-based): the per-technique
+pages already carry Commands/OPSEC/Detection (even fundamentals like
+kerberos-encryption-types have hashcat modes + Rubeus flags) — not "mostly
+theory." The real gap was the **cross-cutting field-craft layer** the wiki lacked
+because it's organized by mechanism. Added 3 concept pages: [[ad-error-decoder]]
+("failure → cause → fix" — the real Kerberos/AD CS/LDAP errors: KRB_AP_ERR_SKEW,
+S_PRINCIPAL_UNKNOWN, KRB_AP_ERR_MODIFIED, ETYPE_NOTSUPP, PADATA_TYPE_NOSUPP,
+strong-SID-binding, LDAP signing/channel-binding — each with the one-line fix +
+"the five fixes that solve most of it"), [[foothold-playbook]] (the "you hold X →
+do Y next" decision runbook — nothing/user-list/low-priv-cred/hash/ticket/
+local-admin/DA — condensing methodology+enum+path notes to one glance), and
+[[ticket-manipulation]] (kirbi↔ccache via ticketConverter, KRB5CCNAME, get/use/
+triage/purge one-liners for Rubeus+impacket+nxc, the cross-platform workflow, and
+the field gotchas). Tips/gotchas "audit pass" done as integration: wired the
+field-craft into the hubs — redteam-ad-methodology, ad-enumeration,
+situational-awareness, kerberos-double-hop, ccache, ticket-and-credential-opsec.
+Also fixed one more inherited Diamond-AES128 line in [[ccache]] (→ "modify-a-real-
+TGT forgery"). Index updated (3 concepts); taxonomy: all three → AD Ops &
+Methodology. (Build still not run — Bash classifier-blocked; needs `npm run build`.)
+
+## [2026-09-07] lint | Practical-density pass on theory-heavy fundamentals
+
+User asked to make the whole wiki less theory / more commands+tips. Sampled
+broadly first: the technique pages already carry Commands + Red-team OPSEC +
+Detection (even kerberos-encryption-types/kerberos-preauth ship the hashcat modes
++ tool flags), so a blanket rewrite would be churn/regression risk (and no build
+this session). Did a targeted density pass on the fundamentals that were lightest
+on raw commands: [[ldap]] (added the raw `ldapsearch` attacker-filter grab-bag —
+kerberoastable / AS-REP / unconstrained+constrained deleg / PASSWD_NOTREQD /
+adminCount / LAPS / gMSA / trusts / MAQ, with the `:1.2.840.113556.1.4.803:`
+bit-AND rule), [[service-principal-name]] (setspn -Q, PowerView -SPN, GetUserSPNs
+list/request/one, fake-SPN targeted-roast one-liner), [[ntlm]] (was prose-only —
+added a full capture/crack/PtH/NTLMv1-downgrade/relay-list command block), [[smb]]
+(added the share-enum one-liners the section was missing: nxc --shares/spider,
+smbclient, smbmap, secretsdump). kerberos-preauth/smb-exec/ldap-detection were
+already practical. Net: enrich where thin, don't rewrite what's already
+command-rich.

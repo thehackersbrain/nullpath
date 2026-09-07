@@ -69,3 +69,4 @@ become findings regardless of whether you exploit them.
 - [[ad-tier-model]] — where your context sits
 - [[windows-privilege-escalation]] — the local-privesc sweep the on-host SA feeds into
 - [[winpeas]] — the enumeration tool for that sweep
+- [[foothold-playbook]] — the "what next" decision runbook once you've oriented

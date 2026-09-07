@@ -275,6 +275,22 @@ first when answering queries.
 - [[timeroasting]] — unauthenticated computer-account roast via MS-SNTP (UDP/123,
   no logon events; hashcat -m 31300)
 
+- [[nopac]] — sAMAccountName spoofing (CVE-2021-42278/42287): add a computer,
+  rename it to a DC, S4U2self → ticket as the DC → DCSync
+- [[targeted-roasting]] — turn a GenericWrite edge into a crackable hash: set an
+  SPN (Kerberoast) or flip DONT_REQ_PREAUTH (AS-REP), roast, revert
+- [[ms14-068]] — CVE-2014-6324 PAC forgery: any user forges Domain Admins into
+  the PAC on unpatched DCs (the ancestor of noPac / forged tickets)
+- [[kerberos-armoring-fast]] — Kerberos armoring (FAST): enforced, it kills
+  AS-REP roasting & pre-auth brute (but not Kerberoast/Timeroast)
+
+- [[foothold-playbook]] — the "you hold X → do Y next" decision runbook; the
+  scattered enum+attack pages condensed to one glance
+- [[ad-error-decoder]] — failure → cause → fix: the real Kerberos/AD CS/LDAP
+  errors, what they mean, and the one-line fix (skew, FQDN, enctype, LDAPS)
+- [[ticket-manipulation]] — kirbi↔ccache, KRB5CCNAME, PtT/PtK/OverPtH one-liners,
+  triage/purge; the cross-platform ticket plumbing in one place
+
 ## Entities
 
 ### Tools
@@ -285,6 +301,10 @@ first when answering queries.
   kerberos::golden, dcsync)
 - [[evil-winrm]] — offensive WinRM shell (PtH/PtT, upload, in-memory .NET);
   the go-to WinRM foothold client
+- [[gmsadumper]] — read gMSA `msDS-ManagedPassword` over LDAP → current NT hash
+  (no LSASS/DCSync); the "gMSA dumper"
+- [[bloodyad]] — Linux AD DACL/attribute-write framework: `get writable`,
+  reset pw, add dcsync/rbcd/shadowCredentials/computer, flip UAC (one tool, whole chain)
 - [[impacket]] — Python protocol toolkit (secretsdump, psexec, ticketer,
   GetST, etc.)
 - [[secretsdump]] — NTDS/SAM dumper: remote DCSync (`-just-dc-user krbtgt`)

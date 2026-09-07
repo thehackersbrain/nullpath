@@ -39,6 +39,7 @@ export const SECTIONS: SectionDef[] = [
       "ccache",
       "gmsa",
       "laps",
+      "kerberos-armoring-fast",
       "ad-tier-model",
     ],
   },
@@ -61,6 +62,7 @@ export const SECTIONS: SectionDef[] = [
       "pkinit-unpac-the-hash",
       "dpapi",
       "timeroasting",
+      "targeted-roasting",
     ],
   },
   {
@@ -69,7 +71,7 @@ export const SECTIONS: SectionDef[] = [
     blurb:
       "Once you hold a signing secret, forge tickets offline: Golden, Silver, Diamond, and SID-history injection.",
     chips: ["mimikatz", "rubeus", "ticketer"],
-    slugs: ["golden-silver-tickets", "diamond-ticket", "sapphire-ticket", "sid-history"],
+    slugs: ["golden-silver-tickets", "diamond-ticket", "sapphire-ticket", "nopac", "ms14-068", "sid-history"],
   },
   {
     id: "delegation",
@@ -221,6 +223,9 @@ export const SECTIONS: SectionDef[] = [
       "opsec-ad-tradecraft",
       "bloodhound-opsec",
       "ticket-and-credential-opsec",
+      "foothold-playbook",
+      "ad-error-decoder",
+      "ticket-manipulation",
     ],
   },
   {

