@@ -278,6 +278,13 @@ Full chain (PetitPotam coercion → relay → cert → DCSync) is detailed in
 - [[esc13]] — issuance policy linked to a privileged group
 - [[esc14]] — weak explicit mapping via altSecurityIdentities
 - [[esc15]] — EKUwu / CVE-2024-49019 (V1 template default policy)
+- [[esc16]] — security extension disabled **CA-wide** (the domain-wide ESC9)
+
+## Cross-forest
+
+- [[cross-forest-adcs]] — when a CA is trusted across a forest boundary
+  (published into another forest's NTAuth), these ESCs become **cross-forest**
+  privilege escalation — PKI bypasses the trust's SID filtering.
 
 ## Links
 

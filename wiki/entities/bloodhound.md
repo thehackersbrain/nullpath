@@ -9,8 +9,8 @@ tags: [tool, active-directory, graph, enumeration, specterops]
 # BloodHound
 
 **BloodHound** (SpecterOps; original by Rob King) is a **graph-based AD
-attack-path analyzer**. It ingests the domain (via the SharpHound collector or
-BloodHound.py), builds a Neo4j graph of principals, objects, and
+attack-path analyzer**. It ingests the domain (via a collector — SharpHound,
+BloodHound.py, or [[rusthound]] — see that page for choosing one), builds a Neo4j graph of principals, objects, and
 **edges** (the abuse relationships), and lets you query *shortest paths* from
 your current context to Domain/Enterprise Admins. It's how you turn raw
 ACL/group data into an exploitable plan — the backbone of
@@ -36,10 +36,10 @@ These edges are exactly the abusable relationships described across
 ## Workflow
 
 ```bash
-# 1. Collect (from a host with domain read access) — SharpHound (C#) or
-#    BloodHound.py (Python); -c All for everything, or targeted:
-SharpHound.exe -c All,GPOLinked,LocalAdmin     # or
-python3 bloodhound.py -d corp.local -u user -p pass -ns -dc <dc> -c All
+# 1. Collect (from a host with domain read access). Pick a collector:
+SharpHound.exe -c All,GPOLinked,LocalAdmin                       # C# (Windows)
+python3 bloodhound.py -d corp.local -u user -p pass -ns -dc <dc> -c All   # Python
+rusthound-ce -d corp.local -u user@corp.local -p pass -i <dc> -z          # Rust, single static binary ([[rusthound]])
 
 # 2. Ingest into Neo4j (BloodHound ingests the .zip)
 # 3. Query — the canonical one:
@@ -112,5 +112,6 @@ The analysis is offline and silent — **all** the noise is in collection:
 ## References
 
 - [BloodHound (SpecterOps)](https://www.bloodhound.readthedocs.io/)
+- [[rusthound]] — the Rust collector (single static binary; no .NET/Python)
 - [SharpHound / BloodHound.py](https://github.com/SpecterOps/BloodHound)
 - [SpecterOps: BloodHound documentation](https://bloodhound.specterops.io/)

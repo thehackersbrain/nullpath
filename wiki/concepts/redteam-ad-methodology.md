@@ -31,7 +31,8 @@ collection tradecraft. Primary building blocks: [[ldap]], [[smb]],
 ### 2. Foothold / initial access
 First domain credential or shell. Often from a captured hash
 ([[ntlm-relay-coercion]], [[mitm6-ipv6-relay]]), a sprayed/guessed password
-([[kerbrute]]), or a pre-auth-less account ([[as-rep-roasting]]). On the
+([[password-spraying]] via [[kerbrute]]), or a pre-auth-less account
+([[as-rep-roasting]]). Remote enum to find the targets is [[ad-enumeration]]. On the
 foothold box itself the immediate next step is **local** privesc —
 [[windows-privilege-escalation]] — because local admin is what unlocks
 [[credential-dumping]] and, downstream, the coercion and lateral phases below.
@@ -45,8 +46,8 @@ enctype** — see [[opsec-ad-tradecraft]].
 ### 4. Lateral movement
 Reuse identity material without cracking: [[pass-the-hash-and-ticket]],
 [[pass-the-key]], [[overpass-the-hash]], then execute via
-[[remote-execution]]. Move through the environment over C2 —
-[[c2-and-pivoting-ad]].
+[[remote-execution]] (mind the [[kerberos-double-hop]]). Move through the
+environment over C2 — [[c2-and-pivoting-ad]], built on [[pivoting-and-tunneling]].
 
 ### 5. Privilege escalation
 Walk the graph to Tier 0: [[acl-abuse]], [[gpo-abuse]],

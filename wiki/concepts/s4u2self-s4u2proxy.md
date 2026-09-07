@@ -110,6 +110,8 @@ Rubeus.exe s4u /proxy /user:victim /service:cifs/target.corp.local /rc4
 - [[rbcd-via-ntlm-relay]] — credential-less RBCD via mitm6/WPAD relay
 - [[pass-the-hash-and-ticket]] — the captured TGT/TGS (PtT) the S4U flow exposes
 - [[ntlm-relay-coercion]] — how the victim is coerced to present their TGT
+- [[bronze-bit]] — CVE-2020-17049: flip the S4U2self forwardable bit to defeat Protected Users / "sensitive" flags
+- [[sapphire-ticket]] — uses S4U2self to pull a real privileged PAC into a forged TGT
 
 ## References
 

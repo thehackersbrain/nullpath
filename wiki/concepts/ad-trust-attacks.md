@@ -64,5 +64,9 @@ on the Forest B member server.
 
 ## See also
 
+- [[ad-trusts]] — trust fundamentals (types, direction, transitivity, SID-filter defaults)
+- [[trust-key-abuse]] — forging inter-realm TGTs / child→parent Enterprise Admin
+- [[foreign-security-principals]] — the quiet cross-trust path (real membership, no forgery)
+- [[cross-forest-adcs]] — PKI as a cross-forest auth bridge that bypasses SID filtering
 - [[cve-2020-0665]] — the forest trust transitivity bypass detailed above
 - [[path-cross-forest-trust-pivot]] — the end-to-end cross-forest chain

@@ -91,6 +91,8 @@ Set-DomainObject -Identity attacker -Set @{'sidHistory'='S-1-5-21-PARENTFOREST-.
 
 - [[kerberos-pac]] — the PAC is what carries the sidHistory SIDs at auth
 - [[acl-abuse]] — GenericWrite on `sidHistory` is the access primitive
+- [[ad-trusts]] — trust fundamentals (why intra-forest SIDs aren't filtered)
+- [[trust-key-abuse]] — injecting these SIDs into a forged inter-realm/trust ticket
 - [[ad-trust-attacks]], [[ad-forest-trust-attacks]] — the cross-forest trust controls (SID filtering, TREAT_AS_EXTERNAL)
 - [[krb5pac]] — the PAC manipulation that injects the privileged SID
 - [[dcshadow]] — a stealthier delivery for sidHistory writes (via MS-DRSR replication)

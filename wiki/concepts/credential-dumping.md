@@ -20,7 +20,7 @@ secret. The detailed mechanics live on each store's page.
 | **[[lsass]]** | **live** NTLM hashes, **Kerberos TGT/TGS**, DPAPI master keys, cert keys | memory (`lsass.exe`) | procdump/comsvcs/minidump → mimikatz; or `secretsdump` via SMB |
 | **[[sam-database]]** | **local** account NTLM hashes (+ LAPS) | `System32\config\SAM` + `SYSTEM` | offline hive copy → `secretsdump`/`secretsdump -sam` |
 | **[[ntds-dit]]** | **every domain** account (NTLM + Kerberos keys), trusts | `NTDS.dit` on DCs | `secretsdump -ntds` (vssadmin/ntdsutil), `dcbackup` |
-| **DPAPI** | browser stores, Wi-Fi, RDP creds, vault | per-user profile | `dpapi` (mimikatz) with the master keys from LSASS/SAM |
+| **[[dpapi]]** | browser logins+**cookies**, Wi-Fi, RDP creds, vault; **domain backup key** = decrypt any user offline | per-user profile / DC backup key | `dpapi::` (mimikatz), SharpDPAPI, DonPAPI, `nxc --dpapi` |
 | **Cached domain creds** | last N domain logon NTLMs | `SYSTEM` hive `Cache` | offline `secretsdump -system` |
 | **Registry** | auto-logon password, stored creds | `SYSTEM`/`Software` hives | hive copy + parse |
 | **AD CS certs** | cert private keys + PFX | cert store / CA | `certipy`/`ForgeCert` ([[golden-certificate]]) |

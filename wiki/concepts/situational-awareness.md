@@ -63,6 +63,7 @@ become findings regardless of whether you exploit them.
 ## See also
 
 - [[redteam-ad-methodology]] — the flow this opens
+- [[ad-enumeration]] — the remote/over-the-tunnel enum cheat-cards (this page's on-host counterpart)
 - [[bloodhound-opsec]] — the graph-collection step after SA
 - [[opsec-ad-tradecraft]] — how loudly to act on what you find
 - [[ad-tier-model]] — where your context sits

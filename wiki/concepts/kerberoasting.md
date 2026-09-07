@@ -28,7 +28,7 @@ prerequisite. The raw source summary lives in
   (0x11) / AES256 (0x12)** TGSs can be cracked offline (hashcat `-m 13100`
   for RC4, `-m 19700`/`19800` for AES, John `--format=krb5tgs`).
 - If the cracked password belongs to a **service account running with
-  elevated rights** (SQL/AD CS/IIS on a sensitive host, or a domain-group
+  elevated rights** (SQL ([[mssql-abuse]])/AD CS/IIS on a sensitive host, or a domain-group
   membership), you've effectively cracked a foothold on that service.
 
 ## The flow
@@ -106,6 +106,7 @@ mitigation in this wiki.
 - [[gmsa]] — the primary mitigation (auto-rotated service secret)
 - [[path-kerberoast-to-domain-admin]] — the end-to-end chain
 - [[as-rep-roasting]] — the sibling attack (AS-REP, no TGS needed)
+- [[timeroasting]] — the *unauthenticated* sibling that roasts **computer**-account passwords via MS-SNTP
 - [[acl-abuse]] — what the cracked service account's rights give you
 - [[bloodhound]] — `hasSPN` enumeration
 - [[krbtgt]] — the *TGT*-forgery key (contrast: krbtgt is domain-wide, a TGS

@@ -65,6 +65,7 @@ enforcement level).
 ## Links
 
 - [[ad-cs-esc-attacks]] — ESC9 in the family
+- [[esc16]] — the **CA-wide** version (security extension disabled globally, not per-template)
 - [[esc10]] — the weak-mapping half of the pair
 - [[certificate-mapping]] — the mapping/enforcement mechanics
 - [[certificate-templates]] — where the flag lives

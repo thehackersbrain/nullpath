@@ -165,3 +165,4 @@ step 3 (the network capture) made into a *detection*.
   *heartbeat*; the pivot is the C2's *reach*)
 - [[process-injection]] — the *host* action the beacon often *triggers*
   (a beacon → an injection → a dump)
+- [[modern-c2-frameworks]] — the open-source C2s (Sliver/Mythic/Havoc) that emit this beacon

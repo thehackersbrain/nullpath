@@ -87,3 +87,5 @@ transport. Correlate the logon (4624) with the process/service creation.
 - [[ad-tier-model]] — why the *destination* tier of each exec matters
 - [[lsass]] — what you typically go to a box *to get* once you have exec
 - [[windows-privilege-escalation]] — if the exec lands you low-priv, this is the on-box step before you can dump/coerce/move
+- [[kerberos-double-hop]] — why the *second* hop from a WinRM/psexec shell fails, and how to beat it
+- [[evil-winrm]] — the offensive WinRM client for the WinRM/PSRemoting row

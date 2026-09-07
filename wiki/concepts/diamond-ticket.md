@@ -74,6 +74,7 @@ still honored — a downgrade that persists. See the [[ad-cs-esc-attacks]]-style
 ## Links
 
 - [[golden-silver-tickets]] — the base Golden/Silver forgery this extends
+- [[sapphire-ticket]] — the stealthier sibling: same "modify a real TGT" idea, but injects a **real** privileged PAC via S4U2self
 - [[krbtgt]] — the account whose AES128 key is the primitive
 - [[kerberos-encryption-types]] — the RC4/AES128/AES256 downgrade context
 - [[dcsync]] — how you obtain the `krbtgt` AES128 key

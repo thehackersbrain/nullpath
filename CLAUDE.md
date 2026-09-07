@@ -121,26 +121,23 @@ create new top-level categories under `wiki/` and document them here.
   overwrite silently — note it explicitly (e.g. "Update YYYY-MM-DD:
   superseded by ... — see [[...]]") so the evolution is visible.
 
-## Search (qmd)
+## Search
 
-This repo has a local [qmd](https://github.com/tobi/qmd) index over
-`wiki/` and `raw/` (collections defined in `.qmd/index.yml`, index db in
-`.qmd/index.sqlite` — gitignored, machine-local).
+This is a website-backed wiki, **not** a local search-index base — there is
+no external search daemon to keep in sync (no `qmd`, no embedding step, no
+reindex after edits). Find pages with:
 
-- `qmd search "<keywords>"` — fast BM25 full-text search, no models needed,
-  near-instant. **This is the default** — use it for finding pages.
-- `qmd query "<question>"` — hybrid BM25 + vector + reranking. On this
-  machine this is CPU-only and very slow (5+ minutes per query once models
-  are downloaded/cached). Avoid unless the user explicitly asks for
-  semantic search and is OK with the wait.
-- `qmd get qmd://wiki/<path>` — fetch a specific document by its qmd URI.
-- After adding/editing wiki pages, run `qmd update` to refresh the index.
-  (`qmd embed` only matters if you end up using `qmd query`.)
+- **`wiki/index.md`** — the curated catalog; read this first to locate a page
+  by topic.
+- **`grep -ril "<term>" wiki/`** (or ripgrep) — fast full-text over the
+  markdown when you need a specific passage or to check for duplicates before
+  writing.
+- **The published site's own search** — the Website frontend (below) builds a
+  client-side search over all pages at build time; that's the reader-facing
+  search, and it updates whenever the site is rebuilt.
 
-Prefer `qmd search` over reading `index.md` once the wiki grows large
-enough that the index file stops being a complete enough map; for now both
-are useful — `index.md` gives the curated overview, `qmd search` finds
-specific passages.
+So the maintenance loop after editing pages is just: update `index.md` +
+`log.md`, then (to publish) `npm run build`. Nothing else to refresh.
 
 ## Website frontend (`website/`)
 

@@ -43,5 +43,6 @@ certipy find -stdout           # lists CAs and NTAuth trust
 ## Links
 
 - [[pki-and-ad-cs-architecture]], [[ad-cs-esc-attacks]]
+- [[cross-forest-adcs]] — publishing a CA into *another* forest's NTAuth extends the auth boundary across the trust
 - [[golden-certificate]] — forging certs once you can trust your own CA
 - [[certified-pre-owned]]

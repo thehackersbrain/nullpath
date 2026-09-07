@@ -49,6 +49,7 @@ export const SECTIONS: SectionDef[] = [
       "Getting authentication material out of the domain: roasting, replication, and reusing hashes, keys, tickets and certs.",
     chips: ["impacket", "rubeus", "hashcat"],
     slugs: [
+      "password-spraying",
       "kerberoasting",
       "as-rep-roasting",
       "dcsync",
@@ -58,6 +59,8 @@ export const SECTIONS: SectionDef[] = [
       "pass-the-cert",
       "shadow-credentials",
       "pkinit-unpac-the-hash",
+      "dpapi",
+      "timeroasting",
     ],
   },
   {
@@ -66,7 +69,7 @@ export const SECTIONS: SectionDef[] = [
     blurb:
       "Once you hold a signing secret, forge tickets offline: Golden, Silver, Diamond, and SID-history injection.",
     chips: ["mimikatz", "rubeus", "ticketer"],
-    slugs: ["golden-silver-tickets", "diamond-ticket", "sid-history"],
+    slugs: ["golden-silver-tickets", "diamond-ticket", "sapphire-ticket", "sid-history"],
   },
   {
     id: "delegation",
@@ -79,6 +82,7 @@ export const SECTIONS: SectionDef[] = [
       "unconstrained-delegation",
       "resource-based-constrained-delegation",
       "s4u2self-s4u2proxy",
+      "bronze-bit",
     ],
   },
   {
@@ -123,6 +127,8 @@ export const SECTIONS: SectionDef[] = [
       "esc13",
       "esc14",
       "esc15",
+      "esc16",
+      "cross-forest-adcs",
       "golden-certificate",
     ],
   },
@@ -160,7 +166,7 @@ export const SECTIONS: SectionDef[] = [
     blurb:
       "Turning credentials into code execution across hosts: SMB, WMI, WinRM, PSRemoting and RDP.",
     chips: ["impacket", "netexec", "evil-winrm"],
-    slugs: ["remote-execution"],
+    slugs: ["remote-execution", "kerberos-double-hop", "mssql-abuse"],
   },
   {
     id: "persistence",
@@ -184,7 +190,12 @@ export const SECTIONS: SectionDef[] = [
     blurb:
       "Crossing the domain and forest boundary: SID filtering, TREAT_AS_EXTERNAL and trust-key abuse.",
     chips: ["impacket", "mimikatz"],
-    slugs: ["ad-trust-attacks"],
+    slugs: [
+      "ad-trusts",
+      "ad-trust-attacks",
+      "trust-key-abuse",
+      "foreign-security-principals",
+    ],
   },
   {
     id: "detection",
@@ -203,7 +214,9 @@ export const SECTIONS: SectionDef[] = [
     slugs: [
       "redteam-ad-methodology",
       "situational-awareness",
+      "ad-enumeration",
       "c2-and-pivoting-ad",
+      "pivoting-and-tunneling",
       "defense-evasion-ad",
       "opsec-ad-tradecraft",
       "bloodhound-opsec",
@@ -243,6 +256,7 @@ export const SECTIONS: SectionDef[] = [
       "etw",
       "cobalt-strike",
       "meterpreter",
+      "modern-c2-frameworks",
       "sysmon",
       "sigma",
     ],

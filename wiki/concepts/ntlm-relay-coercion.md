@@ -22,6 +22,8 @@ attacker in the first place.
 - **PrinterBug / Spooler** — abuses MS-RPRN (Print Spooler) similarly
   ([[printer-bug]], CVE-2021-34527).
 - **PrivExchange** — makes Exchange authenticate as SYSTEM if unpatched.
+- **MSSQL `xp_dirtree`** — any low-priv SQL login can force the SQL *service
+  account* to authenticate to your listener ([[mssql-abuse]]).
 - **mitm6 + WPAD spoofing** — on-network, no-creds path: take over IPv6 DNS
   via DHCPv6 (mitm6), then spoof the WPAD location so hosts/computer
   accounts authenticate to an attacker-controlled HTTP proxy. Works against

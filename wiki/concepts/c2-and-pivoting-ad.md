@@ -27,6 +27,7 @@ frameworks are [[cobalt-strike]] and its [[meterpreter]] payload.
 # /etc/proxychains.conf -> socks5 127.0.0.1 1080
 proxychains nxc smb 10.0.0.0/24
 proxychains bloodhound-python -u user -p 'Pass' -d corp.local -ns 10.0.0.10 -c DCOnly
+proxychains rusthound-ce -d corp.local -u user@corp.local -p 'Pass' -i 10.0.0.10 -z  # Rust single-binary collector ([[rusthound]])
 proxychains certipy find -u user@corp.local -p 'Pass' -dc-ip 10.0.0.10
 ```
 
@@ -68,6 +69,8 @@ hides the *tool*, not the *traffic*.
 
 ## See also
 
+- [[pivoting-and-tunneling]] — the operator-side plumbing (ligolo/chisel/SSH/proxychains) that builds the tunnel this page uses
+- [[ad-enumeration]] — the remote enum cheat-cards you run first through the tunnel
 - [[redteam-ad-methodology]] — where pivoting sits in the flow
 - [[defense-evasion-ad]] — why operating remotely is an evasion
 - [[ticket-and-credential-opsec]] — Kerberos over the wire
@@ -75,3 +78,4 @@ hides the *tool*, not the *traffic*.
 - [[remote-execution]] — execution once you're through
 - [[beaconing]] — the C2 heartbeat, its shape, and how it's detected
 - [[cobalt-strike]] / [[meterpreter]] — the reference C2 framework and payload
+- [[modern-c2-frameworks]] — the open-source C2 landscape (Sliver / Mythic / Havoc)

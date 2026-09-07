@@ -121,6 +121,7 @@ of the three is, the attributes that carry it, and how to detect/harden it.
 ## Links
 
 - [[s4u2self-s4u2proxy]] — the S4U protocol mechanics under all three
+- [[bronze-bit]] — CVE-2020-17049: defeats Protected Users / "sensitive" flags in S4U2proxy
 - [[resource-based-constrained-delegation]] — the RBCD attribute deep-dive
 - [[kerberos-delegation-abuse]] — the raw source summary (source page)
 - [[kerberos-authentication]] — the TGT/TGS flow delegation rides

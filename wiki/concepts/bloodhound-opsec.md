@@ -9,7 +9,7 @@ tags: [red-team, active-directory, bloodhound, opsec, enumeration]
 # BloodHound Collection OPSEC
 
 [[bloodhound]] is the map for the whole [[redteam-ad-methodology]] flow, but
-its collectors (SharpHound / bloodhound-python) are also one of the loudest
+its collectors (SharpHound / bloodhound-python / [[rusthound]]) are also one of the loudest
 things you can do in a domain. This page is about collecting the graph
 **quietly** — the analysis in BloodHound itself is offline and silent; the
 noise is entirely in collection.
@@ -48,6 +48,10 @@ bloodhound-python -u user -p 'Pass' -d corp.local -ns 10.0.0.10 -c DCOnly
 
 # SharpHound (Windows) — DC-only with jitter
 SharpHound.exe -c DCOnly --throttle 1000 --jitter 30
+
+# RustHound-CE (single static binary, no .NET/Python on-host -> less EDR surface;
+# the LDAP volume is still the same, so the OPSEC below still applies)
+rusthound-ce -d corp.local -u user@corp.local -p 'Pass' -i 10.0.0.10 -z
 ```
 
 ## Operating the data

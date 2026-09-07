@@ -242,6 +242,39 @@ first when answering queries.
 - [[windows-local-persistence]] — host-level persistence (Run keys, services,
   tasks, WMI, COM, IFEO) to keep the local foothold alive
 
+- [[ad-enumeration]] — remote AD enum cheat-cards from the Linux operator host
+  (nxc/ldapsearch/bloodhound-python/certipy find over the tunnel)
+- [[password-spraying]] — low-and-slow one-password-many-accounts guessing;
+  lockout-aware first foothold (4625/4771; kerbrute/nxc)
+- [[kerberos-double-hop]] — why the second hop from a WinRM/psexec shell fails
+  and how to beat it (CredSSP, PtT injection, S4U)
+- [[pivoting-and-tunneling]] — operator-side plumbing: ligolo-ng/chisel/SSH
+  dynamic forwards + proxychains to route AD tooling into the target net
+
+- [[dpapi]] — decrypt masterkeys → browser creds+cookies, Credential
+  Manager/RDP/WiFi, and the domain DPAPI backup key for offline mass-decrypt
+- [[mssql-abuse]] — xp_cmdshell, EXECUTE AS/linked-server crawl, xp_dirtree
+  UNC coercion → relay/roast; MSSQLSvc SPN is kerberoastable
+- [[modern-c2-frameworks]] — the open-source C2 landscape (Sliver / Mythic /
+  Havoc) beyond Cobalt Strike + Meterpreter
+
+- [[ad-trusts]] — trust fundamentals: types, direction, transitivity, SID-filter
+  defaults; the forest (not the domain) is the security boundary
+- [[trust-key-abuse]] — forge inter-realm TGTs ("trust tickets") with the trust
+  key; child→parent Enterprise Admin (raiseChild)
+- [[foreign-security-principals]] — quiet cross-trust path: use existing foreign
+  group membership, no forgery, low signal
+- [[cross-forest-adcs]] — PKI as a cross-forest auth bridge (CA published into
+  another forest's NTAuth bypasses SID filtering)
+- [[esc16]] — security extension disabled **CA-wide** (the domain-wide ESC9;
+  UPN-swap against any client-auth template)
+- [[sapphire-ticket]] — stealthiest krbtgt forgery: embed a real privileged PAC
+  pulled via S4U2self (ticketer -impersonate)
+- [[bronze-bit]] — CVE-2020-17049: flip the S4U2proxy forwardable bit to defeat
+  Protected Users / "sensitive" delegation protections
+- [[timeroasting]] — unauthenticated computer-account roast via MS-SNTP (UDP/123,
+  no logon events; hashcat -m 31300)
+
 ## Entities
 
 ### Tools
@@ -250,6 +283,8 @@ first when answering queries.
   tickets, triage)
 - [[mimikatz]] — the Swiss-army credential dumper (logonpasswords,
   kerberos::golden, dcsync)
+- [[evil-winrm]] — offensive WinRM shell (PtH/PtT, upload, in-memory .NET);
+  the go-to WinRM foothold client
 - [[impacket]] — Python protocol toolkit (secretsdump, psexec, ticketer,
   GetST, etc.)
 - [[secretsdump]] — NTDS/SAM dumper: remote DCSync (`-just-dc-user krbtgt`)
@@ -258,6 +293,8 @@ first when answering queries.
   lsass.exe` dump that mimikatz parses)
 - [[certipy]] — AD CS attack tool (find/find-ca, req)
 - [[bloodhound]] — AD attack-path graph (SharpHound ingest, path queries)
+- [[rusthound]] — Rust BloodHound collector; single static binary, no
+  .NET/Python (RustHound-CE for BloodHound CE)
 - [[powerview]] — PowerShell AD enumeration (Get-DomainObject, ACL queries)
 - [[petitpotam]] — the MS-EFSRPC NTLM-relay coercion trigger
 - [[ntlmrelayx]] — the NTLM relay engine (AD CS, RBCD, addcomputer targets)

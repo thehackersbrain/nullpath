@@ -149,6 +149,8 @@ The end-to-end chain: [[path-silver-ticket-to-local-admin]].
 - [[krbtgt]] — the secret a Golden Ticket is signed with
 - [[dcsync]] — the standard way to obtain the `krbtgt`/service secrets
 - [[diamond-ticket]] — the rotation-resistant AES128 Golden variant
+- [[sapphire-ticket]] — the stealthiest variant (embeds a *real* privileged PAC via S4U2self)
+- [[trust-key-abuse]] — the inter-realm form: forge a *trust ticket* across a domain/forest trust
 - [[kerberos-pac]] — the PAC a Silver must carry (and can fake)
 - [[kerberos-encryption-types]] — the RC4/AES enctypes behind the downgrade tell
 - [[tgt-tgs]] — what a TGT vs TGS actually is

@@ -56,7 +56,7 @@ Rubeus.exe triage
   `Rubeus.exe dump` or `sekurlsa::tickets /export`).
 - **AES/RC4 keys** → [[pass-the-key|PtK]].
 - **Plaintext** (interactive, some protocols) — the jackpot.
-- **DPAPI master keys / certificates** — decrypt stored creds.
+- **DPAPI master keys / certificates** — decrypt stored creds ([[dpapi]]).
 
 ## Detection
 

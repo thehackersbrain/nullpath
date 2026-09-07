@@ -104,3 +104,4 @@ compromised host that's *still* *under* *control* (the [[beaconing]]
   the *channel*, the *sleep*)
 - [[meterpreter]] — the *payload* the *beacon* *drops* (the *post-exploitation*
   *agent*)
+- [[modern-c2-frameworks]] — the open-source C2 alternatives (Sliver, Mythic, Havoc)
