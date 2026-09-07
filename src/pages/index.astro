@@ -1,0 +1,187 @@
+---
+import Shell from "../layouts/Shell.astro";
+import {
+  getSections,
+  getAllPages,
+  getRecent,
+  getCanonicalPages,
+  fmtDate,
+} from "../lib/wiki";
+
+const sections = await getSections();
+const all = await getAllPages();
+const canon = await getCanonicalPages();
+const recent = await getRecent(6);
+const paths = canon.filter((p) => p.collection === "notes").slice(0, 4);
+
+const topicCards = sections.filter((s) => s.id !== "paths" && s.id !== "other");
+const totalPages = canon.length;
+const totalConcepts = canon.filter((p) => p.collection === "concepts").length;
+const totalPaths = canon.filter((p) => p.collection === "notes").length;
+const totalSections = sections.filter((s) => s.id !== "other").length;
+const secColor = (h: number) => `oklch(0.74 0.15 ${h})`;
+
+const home = new URL("/", Astro.site).href;
+const websiteLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "Nullpath",
+  alternateName: "Nullpath — the Active Directory attack reference",
+  url: home,
+  description:
+    "Atomic, cross-linked offensive-security notes on Active Directory, Kerberos and Windows attack technique — with commands, detection footprint and end-to-end attack paths.",
+  inLanguage: "en",
+  publisher: { "@type": "Person", name: "Gaurav Raj", url: "https://thehackersbrain.dev" },
+  potentialAction: {
+    "@type": "SearchAction",
+    target: { "@type": "EntryPoint", urlTemplate: `${home}search?q={search_term_string}` },
+    "query-input": "required name=search_term_string",
+  },
+};
+---
+
+<Shell
+  description="Atomic, cross-linked offensive-security notes on Active Directory, Kerberos and Windows attack technique — commands, detection footprint, and end-to-end attack paths."
+  jsonLd={websiteLd}
+>
+  <!-- hero -->
+  <section class="relative overflow-hidden border-b border-line">
+    <div
+      class="pointer-events-none absolute inset-0"
+      style="background:
+        radial-gradient(60% 120% at 12% -10%, color-mix(in oklch, var(--color-accent) 22%, transparent), transparent 60%),
+        radial-gradient(50% 120% at 95% 0%, color-mix(in oklch, var(--color-secondary) 18%, transparent), transparent 55%);"
+    >
+    </div>
+    <div
+      class="pointer-events-none absolute inset-0 opacity-[0.18]"
+      style="background-image: linear-gradient(var(--color-line) 1px, transparent 1px), linear-gradient(90deg, var(--color-line) 1px, transparent 1px); background-size: 46px 46px; mask-image: radial-gradient(80% 80% at 30% 0%, black, transparent 75%); -webkit-mask-image: radial-gradient(80% 80% at 30% 0%, black, transparent 75%);"
+    >
+    </div>
+
+    <div class="relative px-5 pb-14 pt-16 md:px-8">
+      <div class="max-w-[780px]">
+        <div class="kicker mb-4 flex items-center gap-2">
+          <span class="dot"></span>
+          Offensive security · Active Directory · Kerberos
+        </div>
+        <h1 class="mb-4 font-display text-[40px] font-semibold leading-[1.08] tracking-[-0.025em] text-ink-bright md:text-[52px]">
+          The Active Directory<br />attack reference.
+        </h1>
+        <p class="mb-7 max-w-[600px] text-[15px] leading-relaxed text-muted">
+          Atomic, cross-linked notes written the way they get used — enumerate,
+          exploit, escalate, persist. Every page carries the protocol mechanics,
+          the exact commands, the detection footprint, and how each technique
+          chains into the next.
+        </p>
+        <div class="mb-9 flex flex-wrap gap-3">
+          <a href="/wiki/kerberos-authentication" class="btn btn-primary">Start with Kerberos →</a>
+          <a href="/s/paths" class="btn btn-ghost">Browse attack paths</a>
+        </div>
+
+        <div class="flex flex-wrap gap-x-8 gap-y-3">
+          {
+            [
+              { n: totalPages, l: "pages" },
+              { n: totalConcepts, l: "concepts" },
+              { n: totalPaths, l: "attack paths" },
+              { n: totalSections, l: "sections" },
+            ].map((s) => (
+              <div class="flex items-baseline gap-2">
+                <span class="font-display text-[22px] font-semibold text-ink-bright">{s.n}</span>
+                <span class="kicker">{s.l}</span>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- topic map -->
+  <section class="px-5 pb-4 pt-10 md:px-8">
+    <div class="mb-5 flex items-baseline justify-between">
+      <h2 class="font-display text-[21px] font-semibold text-ink-bright">Topic map</h2>
+      <span class="kicker">by kill-chain phase</span>
+    </div>
+    <div class="grid gap-3 [grid-template-columns:repeat(auto-fill,minmax(272px,1fr))]">
+      {
+        topicCards.map((s) => (
+          <a
+            href={`/s/${s.id}`}
+            class="card card-hover p-4 no-underline hover:no-underline"
+            style={`--sec: ${secColor(s.hue)}`}
+          >
+            <div class="mb-2.5 flex items-center gap-2.5">
+              <span class="dot"></span>
+              <span class="flex-1 font-display text-[16px] font-semibold text-ink-bright">
+                {s.title}
+              </span>
+              <span class="chip">{s.count}</span>
+            </div>
+            <p class="mb-3.5 text-[13px] leading-relaxed text-muted">{s.blurb}</p>
+            <div class="flex flex-wrap gap-1.5">
+              {s.chips.map((c) => (
+                <span class="rounded-md border border-line bg-inset px-1.5 py-0.5 font-mono text-[10.5px] text-dim">
+                  {c}
+                </span>
+              ))}
+            </div>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- recent + paths -->
+  <section class="grid gap-8 px-5 pb-16 pt-10 md:px-8 [grid-template-columns:repeat(auto-fit,minmax(300px,1fr))]">
+    <div>
+      <h2 class="mb-4 font-display text-[21px] font-semibold text-ink-bright">
+        Recently updated
+      </h2>
+      <div class="card overflow-hidden">
+        {
+          recent.map((p, i) => (
+            <a
+              href={p.url}
+              class:list={[
+                "flex items-center gap-3 px-4 py-3 no-underline transition-colors hover:bg-hover hover:no-underline",
+                i > 0 && "border-t border-line-soft",
+              ]}
+            >
+              <span class="w-[52px] font-mono text-[11px] text-faint">{fmtDate(p.updated)}</span>
+              <span class="flex-1 truncate text-[13.5px] text-ink">{p.title.split("—")[0].trim()}</span>
+              <span class="chip">{p.kind}</span>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+    <div>
+      <h2 class="mb-4 font-display text-[21px] font-semibold text-ink-bright">
+        Featured attack paths
+      </h2>
+      <div class="flex flex-col gap-2.5">
+        {
+          paths.map((p) => (
+            <a
+              href={p.url}
+              class="card card-hover p-4 no-underline hover:no-underline"
+              style="--sec: oklch(0.74 0.15 235)"
+            >
+              <div class="mb-1 flex items-center gap-2">
+                <span class="dot"></span>
+                <span class="font-display text-[14.5px] font-medium text-ink">
+                  {p.title.replace(/^Attack Path:\s*/, "").split("→")[0].trim()}
+                </span>
+              </div>
+              <p class="pl-[17px] text-[12.5px] leading-relaxed text-muted">
+                {p.title.replace(/^Attack Path:\s*/, "")}
+              </p>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</Shell>

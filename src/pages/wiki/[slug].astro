@@ -1,0 +1,33 @@
+---
+import { render } from "astro:content";
+import Article from "../../layouts/Article.astro";
+import { getCanonicalPages, resolvePage, getRelated, crumbFor } from "../../lib/wiki";
+
+export async function getStaticPaths() {
+  const pages = await getCanonicalPages();
+  return pages.map((page) => ({ params: { slug: page.slug } }));
+}
+
+const { slug } = Astro.params;
+const page = await resolvePage(slug!);
+if (!page) return Astro.redirect("/404");
+const { Content, headings } = await render(page.entry);
+
+const words = (page.entry.body ?? "").split(/\s+/).filter(Boolean).length;
+const readingMinutes = Math.max(1, Math.round(words / 210));
+
+const crumb = crumbFor(page);
+const related = await getRelated(page);
+---
+
+<Article
+  page={page}
+  sectionTitle={crumb.title}
+  sectionHref={crumb.href}
+  sectionId={crumb.sectionId}
+  headings={headings}
+  related={related}
+  readingMinutes={readingMinutes}
+>
+  <Content />
+</Article>

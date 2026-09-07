@@ -1,0 +1,49 @@
+---
+import Shell from "../layouts/Shell.astro";
+import { getSections } from "../lib/wiki";
+const sections = await getSections();
+const secColor = (h: number) => `oklch(0.74 0.15 ${h})`;
+---
+
+<Shell title="Sections" description="Every section of the wiki, by kill-chain phase.">
+  <div class="px-5 pb-16 pt-8 md:px-8">
+    <div class="mb-8 max-w-[720px]">
+      <div class="kicker mb-3">Knowledge base</div>
+      <h1 class="mb-3 font-display text-[34px] font-semibold tracking-[-0.02em] text-ink-bright md:text-[38px]">
+        Section index
+      </h1>
+      <p class="text-[15px] leading-relaxed text-muted">
+        The knowledge base grouped by phase — fundamentals through domain
+        dominance, plus the end-to-end attack paths that chain them together.
+      </p>
+    </div>
+
+    <div class="grid gap-3 [grid-template-columns:repeat(auto-fill,minmax(280px,1fr))]">
+      {
+        sections.map((s) => (
+          <a
+            href={`/s/${s.id}`}
+            class="card card-hover p-4 no-underline hover:no-underline"
+            style={`--sec: ${secColor(s.hue)}`}
+          >
+            <div class="mb-2.5 flex items-center gap-2.5">
+              <span class="dot"></span>
+              <span class="flex-1 font-display text-[16px] font-semibold text-ink-bright">
+                {s.title}
+              </span>
+              <span class="chip">{s.count}</span>
+            </div>
+            <p class="mb-3.5 text-[13px] leading-relaxed text-muted">{s.blurb}</p>
+            <div class="flex flex-wrap gap-1.5">
+              {s.chips.map((c) => (
+                <span class="rounded-md border border-line bg-inset px-1.5 py-0.5 font-mono text-[10.5px] text-dim">
+                  {c}
+                </span>
+              ))}
+            </div>
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</Shell>

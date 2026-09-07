@@ -1,0 +1,25 @@
+---
+import Shell from "../layouts/Shell.astro";
+import { getEntry, render } from "astro:content";
+
+const entry = await getEntry("meta", "log");
+const { Content } = entry ? await render(entry) : { Content: null };
+---
+
+<Shell title="Changelog" description="Chronological log of wiki ingests, notes and lint passes.">
+  <div class="px-5 pb-16 pt-8 md:px-8">
+    <div class="mb-8 max-w-[740px]">
+      <div class="kicker mb-3">Meta</div>
+      <h1 class="mb-3 font-display text-[34px] font-semibold tracking-[-0.02em] text-ink-bright md:text-[38px]">
+        Changelog
+      </h1>
+      <p class="text-[15px] leading-relaxed text-muted">
+        Append-only record of ingests, synthesis notes and lint passes across
+        the knowledge base — newest entries at the bottom.
+      </p>
+    </div>
+    <div class="prose max-w-[820px]">
+      {Content ? <Content /> : <p>No log found.</p>}
+    </div>
+  </div>
+</Shell>

@@ -1,0 +1,38 @@
+---
+import { render } from "astro:content";
+import Article from "../../layouts/Article.astro";
+import { getAllPages, getCanonicalPages, getRelated } from "../../lib/wiki";
+
+// Only sources whose slug is shadowed by a concept/note at /wiki/<slug> need a
+// dedicated /source/<slug> URL — the unique ones are already served at /wiki.
+export async function getStaticPaths() {
+  const all = await getAllPages();
+  const canon = await getCanonicalPages();
+  const canonBySlug = new Map(canon.map((p) => [p.slug, p]));
+  return all
+    .filter(
+      (p) => p.collection === "sources" && canonBySlug.get(p.slug)?.collection !== "sources"
+    )
+    .map((page) => ({ params: { slug: page.slug }, props: { slug: page.slug } }));
+}
+
+const { slug } = Astro.props as { slug: string };
+const all = await getAllPages();
+const page = all.find((p) => p.collection === "sources" && p.slug === slug)!;
+const { Content, headings } = await render(page.entry);
+
+const words = (page.entry.body ?? "").split(/\s+/).filter(Boolean).length;
+const readingMinutes = Math.max(1, Math.round(words / 210));
+const related = await getRelated(page);
+---
+
+<Article
+  page={{ ...page, url: `/source/${slug}` }}
+  sectionTitle="Sources"
+  sectionHref="/sources"
+  headings={headings}
+  related={related}
+  readingMinutes={readingMinutes}
+>
+  <Content />
+</Article>

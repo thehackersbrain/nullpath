@@ -1,0 +1,65 @@
+---
+import Base from "./Base.astro";
+import Header from "../components/Header.astro";
+import Sidebar from "../components/Sidebar.astro";
+import SearchPalette from "../components/SearchPalette.astro";
+
+interface Props {
+  title?: string;
+  description?: string;
+  currentSlug?: string;
+  currentSection?: string;
+  ogType?: "website" | "article";
+  image?: string;
+  publishedTime?: Date;
+  modifiedTime?: Date;
+  keywords?: string[];
+  noindex?: boolean;
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+}
+const {
+  title,
+  description,
+  currentSlug,
+  currentSection,
+  ogType,
+  image,
+  publishedTime,
+  modifiedTime,
+  keywords,
+  noindex,
+  jsonLd,
+} = Astro.props;
+---
+
+<Base
+  title={title}
+  description={description}
+  ogType={ogType}
+  image={image}
+  publishedTime={publishedTime}
+  modifiedTime={modifiedTime}
+  keywords={keywords}
+  noindex={noindex}
+  jsonLd={jsonLd}
+>
+  <Header />
+  <div class="md:grid md:grid-cols-[330px_minmax(0,1fr)] md:items-start">
+    <Sidebar currentSlug={currentSlug} currentSection={currentSection} />
+    <main class="min-w-0">
+      <slot />
+    </main>
+  </div>
+  <SearchPalette />
+
+  <script>
+    const toggle = document.getElementById("sidebar-toggle");
+    const backdrop = document.getElementById("sidebar-backdrop");
+    toggle?.addEventListener("click", () =>
+      document.body.classList.toggle("sidebar-open")
+    );
+    backdrop?.addEventListener("click", () =>
+      document.body.classList.remove("sidebar-open")
+    );
+  </script>
+</Base>

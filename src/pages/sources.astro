@@ -1,0 +1,48 @@
+---
+import Shell from "../layouts/Shell.astro";
+import { getAllPages, getCanonicalPages } from "../lib/wiki";
+
+// All 13 source summaries. A source is reachable at /wiki/<slug> when nothing
+// shadows it, otherwise at its dedicated /source/<slug> URL.
+const canon = new Map((await getCanonicalPages()).map((p) => [p.slug, p]));
+const pages = (await getAllPages())
+  .filter((p) => p.collection === "sources")
+  .map((p) => ({
+    ...p,
+    href: canon.get(p.slug)?.collection === "sources" ? `/wiki/${p.slug}` : `/source/${p.slug}`,
+  }))
+  .sort((a, b) => a.title.localeCompare(b.title));
+---
+
+<Shell title="Sources" description="Ingested source summaries.">
+  <div class="px-5 pb-16 pt-8 md:px-8">
+    <div class="mb-8 max-w-[740px]">
+      <div class="kicker mb-3">Source notes</div>
+      <h1 class="mb-3 font-display text-[34px] font-semibold tracking-[-0.02em] text-ink-bright md:text-[38px]">
+        Sources
+      </h1>
+      <p class="text-[15px] leading-relaxed text-muted">
+        Summaries of ingested sources kept as standalone pages —
+        {pages.length} source notes.
+      </p>
+    </div>
+    <div class="grid gap-3 [grid-template-columns:repeat(auto-fill,minmax(230px,1fr))]">
+      {
+        pages.map((p) => (
+          <a href={p.href} class="card card-hover p-4 no-underline hover:no-underline">
+            <div class="mb-2 font-display text-[15px] font-semibold text-ink">
+              {p.title.split("—")[0].split("(")[0].trim()}
+            </div>
+            <div class="flex flex-wrap gap-1.5">
+              {p.tags.slice(0, 3).map((t) => (
+                <span class="rounded-md border border-line bg-inset px-1.5 py-0.5 font-mono text-[10px] text-dim">
+                  {t}
+                </span>
+              ))}
+            </div>
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</Shell>

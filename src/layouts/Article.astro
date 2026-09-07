@@ -1,0 +1,195 @@
+---
+import Shell from "./Shell.astro";
+import TableOfContents from "../components/TableOfContents.astro";
+import { fmtDateLong, excerpt, type WikiPage } from "../lib/wiki";
+import type { MarkdownHeading } from "astro";
+
+interface Props {
+  page: WikiPage;
+  sectionTitle: string;
+  sectionHref: string;
+  sectionId?: string;
+  headings: MarkdownHeading[];
+  related: WikiPage[];
+  readingMinutes: number;
+}
+const { page, sectionTitle, sectionHref, sectionId, headings, related, readingMinutes } =
+  Astro.props;
+
+const kindClass =
+  page.collection === "notes"
+    ? "chip-accent"
+    : page.collection === "entities"
+      ? "chip"
+      : "chip";
+
+// Only reserve the right-hand TOC column when there are headings to show —
+// otherwise the article fills the full width.
+const hasToc = headings.filter((h) => h.depth === 2 || h.depth === 3).length > 0;
+
+// ---- SEO ----
+const cleanTitle = page.title.split("—")[0].trim();
+const description = excerpt(page.entry.body ?? "") || page.title;
+const canonical = new URL(page.url, Astro.site).href;
+const author = { "@type": "Person", name: "Gaurav Raj", url: "https://thehackersbrain.dev" };
+
+const articleLd = {
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  headline: cleanTitle,
+  name: page.title,
+  description,
+  url: canonical,
+  mainEntityOfPage: canonical,
+  inLanguage: "en",
+  author,
+  publisher: {
+    "@type": "Organization",
+    name: "Nullpath",
+    url: new URL("/", Astro.site).href,
+  },
+  keywords: page.tags.join(", "),
+  ...(page.created ? { datePublished: page.created.toISOString() } : {}),
+  ...(page.updated ? { dateModified: page.updated.toISOString() } : {}),
+};
+
+const breadcrumbLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Home", item: new URL("/", Astro.site).href },
+    { "@type": "ListItem", position: 2, name: sectionTitle, item: new URL(sectionHref, Astro.site).href },
+    { "@type": "ListItem", position: 3, name: cleanTitle, item: canonical },
+  ],
+};
+---
+
+<Shell
+  title={cleanTitle}
+  description={description}
+  currentSlug={page.slug}
+  currentSection={sectionId}
+  ogType="article"
+  publishedTime={page.created}
+  modifiedTime={page.updated}
+  keywords={page.tags}
+  jsonLd={[articleLd, breadcrumbLd]}
+>
+  <!-- reading progress -->
+  <div class="sticky top-[54px] z-30 h-0.5 bg-line-soft">
+    <div id="read-progress" class="h-full w-0 bg-accent transition-[width] duration-100"></div>
+  </div>
+
+  <div class:list={["grid grid-cols-1 items-start", hasToc && "xl:grid-cols-[minmax(0,1fr)_220px]"]}>
+    <article class="min-w-0 px-5 pb-20 pt-6 md:px-8">
+      <!-- breadcrumb -->
+      <nav class="mb-5 flex flex-wrap gap-2 text-[11.5px] text-dim">
+        <a href="/" class="text-dim no-underline hover:text-ink-2 hover:no-underline">Home</a>
+        <span>/</span>
+        <a href={sectionHref} class="text-dim no-underline hover:text-ink-2 hover:no-underline">{sectionTitle}</a>
+        <span>/</span>
+        <span class="text-ink-2">{page.title.split("—")[0].split("(")[0].trim()}</span>
+      </nav>
+
+      <h1 class="mb-3.5 font-display text-[34px] font-semibold leading-tight tracking-[-0.02em] text-ink-bright md:text-[38px]">
+        {page.title.split("—")[0].trim()}
+      </h1>
+
+      <!-- tag / meta row -->
+      <div class="mb-6 flex flex-wrap items-center gap-2 border-b border-line pb-[18px]">
+        <span class:list={["chip", kindClass]}>{page.kind}</span>
+        {page.tags.slice(0, 5).map((t) => <span class="chip">{t}</span>)}
+        <span class="flex-1"></span>
+        <span class="text-[11px] text-dim">
+          {page.updated ? `updated ${fmtDateLong(page.updated)}` : ""}
+          {readingMinutes ? ` · ${readingMinutes} min` : ""}
+        </span>
+      </div>
+
+      <div class="prose">
+        <slot />
+      </div>
+
+      <!-- footer / related -->
+      <div class="mt-8 flex items-center gap-3 border-y border-line py-3.5 text-[11.5px] text-dim">
+        <span>{page.tags.length} tags</span>
+        <span class="flex-1"></span>
+        <a
+          href={`https://github.com/thehackersbrain`}
+          class="text-accent no-underline hover:no-underline"
+          >Maintained in the wiki repo ↗</a
+        >
+      </div>
+
+      {
+        related.length > 0 && (
+          <div class="mt-6 flex flex-wrap gap-3">
+            {related.map((r) => (
+              <a
+                href={r.url}
+                class="card card-hover min-w-[220px] flex-1 p-4 no-underline hover:no-underline"
+              >
+                <div class="kicker mb-1.5">Related · {r.kind}</div>
+                <div class="font-display text-[15px] font-medium text-ink">
+                  {r.title.split("—")[0].trim()}
+                </div>
+              </a>
+            ))}
+          </div>
+        )
+      }
+    </article>
+
+    <TableOfContents headings={headings} />
+  </div>
+
+  <script>
+    // code-block copy buttons + language label
+    document.querySelectorAll<HTMLPreElement>("article .prose pre").forEach((pre) => {
+      const code = pre.querySelector("code");
+      const lang = pre.dataset.language && pre.dataset.language !== "plaintext"
+        ? pre.dataset.language
+        : "shell";
+
+      const bar = document.createElement("div");
+      bar.className =
+        "flex items-center justify-between border-b border-line-strong bg-panel-2 px-3.5 py-2 font-mono text-[11px] text-dim";
+      const label = document.createElement("span");
+      label.textContent = lang;
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.textContent = "copy";
+      btn.className = "cursor-pointer font-mono text-dim transition-colors hover:text-accent-bright";
+      btn.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(code?.innerText ?? "");
+          btn.textContent = "copied ✓";
+          btn.classList.add("text-green");
+          setTimeout(() => {
+            btn.textContent = "copy";
+            btn.classList.remove("text-green");
+          }, 1400);
+        } catch {}
+      });
+      bar.append(label, btn);
+
+      const wrap = document.createElement("div");
+      wrap.className = "mb-5 overflow-hidden rounded-[9px] border border-line-strong shadow-[var(--shadow-card)]";
+      pre.replaceWith(wrap);
+      pre.classList.add("!mb-0", "!rounded-none", "!border-0");
+      wrap.append(bar, pre);
+    });
+
+    // reading progress bar
+    const bar = document.getElementById("read-progress");
+    if (bar) {
+      const onScroll = () => {
+        const el = document.scrollingElement || document.documentElement;
+        const max = el.scrollHeight - el.clientHeight;
+        bar.style.width = (max > 0 ? Math.min(100, (el.scrollTop / max) * 100) : 0) + "%";
+      };
+      window.addEventListener("scroll", onScroll, { passive: true });
+      onScroll();
+    }
+  </script>
+</Shell>

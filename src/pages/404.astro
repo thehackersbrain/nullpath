@@ -1,0 +1,22 @@
+---
+import Shell from "../layouts/Shell.astro";
+---
+
+<Shell title="Not found" description="Page not found." noindex={true}>
+  <div class="px-5 pb-20 pt-24 text-center md:px-8">
+    <div class="mb-4 font-mono text-[13px] tracking-[0.14em] text-danger-ink">
+      HTTP 404 · PAGE NOT FOUND
+    </div>
+    <h1 class="mx-auto mb-3.5 max-w-[620px] font-display text-[38px] font-semibold tracking-[-0.02em] text-ink-bright md:text-[42px]">
+      This technique isn't documented — yet.
+    </h1>
+    <p class="mx-auto mb-6 max-w-[520px] text-[14px] text-muted">
+      The page you followed doesn't exist, or the wikilink points at a note
+      that hasn't been written. Search the base, or browse the sections.
+    </p>
+    <div class="flex flex-wrap justify-center gap-3">
+      <a href="/search" class="btn btn-primary">Search the base</a>
+      <a href="/sections" class="btn btn-ghost">Browse sections</a>
+    </div>
+  </div>
+</Shell>

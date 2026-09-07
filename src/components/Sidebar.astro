@@ -1,0 +1,120 @@
+---
+import { getSections } from "../lib/wiki";
+
+interface Props {
+  currentSlug?: string;
+  currentSection?: string;
+}
+const { currentSlug, currentSection } = Astro.props;
+const sections = await getSections();
+
+const footer = [
+  { label: "All sections", href: "/sections" },
+  { label: "Attack paths", href: "/s/paths" },
+  { label: "Entities", href: "/entities" },
+  { label: "Sources", href: "/sources" },
+  { label: "Changelog", href: "/changelog" },
+  { label: "Search", href: "/search" },
+];
+---
+
+<aside
+  id="sidebar"
+  class="sidebar sticky top-[54px] z-40 max-h-[calc(100vh-54px)] self-start overflow-auto border-r border-line bg-sidebar pb-10 pt-6"
+>
+  <div class="kicker px-5 pb-3">Knowledge base</div>
+
+  <nav class="px-3">
+    {
+      sections.map((s) => {
+        const open = s.id === currentSection || s.pages.some((p) => p.slug === currentSlug);
+        return (
+          <details open={open} class="group" style={`--sec: oklch(0.74 0.15 ${s.hue})`}>
+            <summary
+              class="flex cursor-pointer list-none items-center gap-2 rounded-md px-2 py-[6px] text-[13px] font-medium text-ink-2 transition-colors hover:bg-hover"
+            >
+              <span class="caret w-2.5 text-[9px] text-dim">▸</span>
+              <span class="dot !h-[6px] !w-[6px]"></span>
+              <a
+                href={`/s/${s.id}`}
+                class="flex-1 text-ink-2 no-underline hover:no-underline"
+                >{s.title}</a
+              >
+              <span class="font-mono text-[10.5px] text-faint">{s.count}</span>
+            </summary>
+            <div class="ml-[13px] mt-0.5 mb-1 border-l border-line pl-2.5">
+              {s.pages.map((p) => (
+                <a
+                  href={p.url}
+                  class:list={[
+                    "block rounded-md px-2.5 py-[5px] text-[12.5px] no-underline transition-colors hover:no-underline",
+                    p.slug === currentSlug
+                      ? "-ml-[13px] border-l-2 border-accent bg-[color-mix(in_oklch,var(--color-accent)_12%,transparent)] pl-[22px] font-medium text-accent-bright"
+                      : "text-muted hover:bg-hover hover:text-ink",
+                  ]}
+                >
+                  {p.title.split("—")[0].split("(")[0].trim()}
+                </a>
+              ))}
+            </div>
+          </details>
+        );
+      })
+    }
+  </nav>
+
+  <div class="mx-5 mt-7 border-t border-line pt-4 text-[11.5px] text-dim">
+    {
+      footer.map((f) => (
+        <a
+          href={f.href}
+          class="flex justify-between py-[3px] text-dim no-underline hover:text-ink-2 hover:no-underline"
+        >
+          <span>{f.label}</span>
+          <span>↗</span>
+        </a>
+      ))
+    }
+  </div>
+</aside>
+
+<div
+  id="sidebar-backdrop"
+  class="fixed inset-x-0 bottom-0 top-[54px] z-[35] hidden bg-black/50"
+>
+</div>
+
+<style>
+  /* rotate caret when the group is open */
+  details[open] > summary .caret {
+    transform: rotate(90deg);
+  }
+  .caret {
+    display: inline-block;
+    transition: transform 0.15s ease;
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+  /* mobile drawer behaviour */
+  @media (max-width: 767px) {
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 54px;
+      bottom: 0;
+      width: 330px;
+      max-height: none;
+      transform: translateX(-105%);
+      transition: transform 0.22s ease;
+      box-shadow: 8px 0 30px rgba(0, 0, 0, 0.45);
+    }
+    :global(body.sidebar-open) .sidebar {
+      transform: translateX(0);
+    }
+    :global(body.sidebar-open) #sidebar-backdrop {
+      display: block;
+    }
+  }
+</style>

@@ -1,0 +1,78 @@
+---
+const path = Astro.url.pathname;
+const nav = [
+  { label: "Home", href: "/" },
+  { label: "Sections", href: "/sections" },
+  { label: "Attack paths", href: "/s/paths" },
+  { label: "Search", href: "/search" },
+];
+const isActive = (href: string) =>
+  href === "/" ? path === "/" : path.startsWith(href);
+---
+
+<header
+  class="sticky top-0 z-50 flex h-[54px] flex-wrap items-center gap-5 border-b border-line bg-header px-4"
+>
+  <button
+    id="sidebar-toggle"
+    type="button"
+    aria-label="Toggle navigation"
+    class="flex cursor-pointer flex-col gap-[3px] p-1.5 -ml-1.5 md:hidden"
+  >
+    <span class="h-0.5 w-[18px] bg-ink-2"></span>
+    <span class="h-0.5 w-[18px] bg-ink-2"></span>
+    <span class="h-0.5 w-[18px] bg-ink-2"></span>
+  </button>
+
+  <a
+    href="/"
+    class="flex h-full items-center border-r border-line pr-4 no-underline hover:no-underline"
+  >
+    <span
+      class="font-display text-[21px] font-semibold tracking-[-0.01em] text-ink-bright"
+      >Nullpath</span
+    >
+  </a>
+
+  <nav class="flex flex-wrap gap-0.5">
+    {
+      nav.map((n) => (
+        <a
+          href={n.href}
+          class:list={[
+            "rounded-[3px] px-2.5 py-1 text-xs tracking-wide no-underline hover:bg-hover hover:text-ink-bright hover:no-underline",
+            isActive(n.href) ? "text-accent-bright" : "text-muted",
+          ]}
+        >
+          {n.label}
+        </a>
+      ))
+    }
+  </nav>
+
+  <div class="flex-1"></div>
+
+  <button
+    id="search-trigger"
+    type="button"
+    class="flex min-w-[210px] cursor-text items-center gap-2 rounded-md border border-line bg-inset px-2.5 py-1.5 text-xs text-faint transition-colors hover:border-line-strong"
+  >
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="text-dim">
+      <circle cx="11" cy="11" r="7"></circle>
+      <line x1="21" y1="21" x2="16.5" y2="16.5"></line>
+    </svg>
+    <span>Search the wiki</span>
+    <span class="flex-1"></span>
+    <kbd
+      id="search-kbd"
+      class="rounded border border-line bg-panel px-1.5 py-0.5 font-mono text-[10px] text-dim"
+      >Ctrl K</kbd
+    >
+  </button>
+</header>
+
+<script>
+  // Show the platform-native shortcut hint.
+  const kbd = document.getElementById("search-kbd");
+  if (kbd && /Mac|iPhone|iPad/.test(navigator.platform)) kbd.textContent = "⌘ K";
+</script>

