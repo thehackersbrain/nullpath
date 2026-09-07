@@ -18,7 +18,9 @@ tunnel and running domain tooling through it, as part of the
 ## The tunnel
 
 A foothold (implant/beacon on an internal host) exposes a **SOCKS proxy**;
-everything else rides through it.
+everything else rides through it. The beacon itself — its heartbeat, the
+C2 it talks to, how the defender spots it — is [[beaconing]]; the reference
+frameworks are [[cobalt-strike]] and its [[meterpreter]] payload.
 
 ```bash
 # proxychains routes Linux AD tooling through the beacon's SOCKS proxy
@@ -71,3 +73,5 @@ hides the *tool*, not the *traffic*.
 - [[ticket-and-credential-opsec]] — Kerberos over the wire
 - [[pass-the-hash-and-ticket]] — the reuse primitives you tunnel
 - [[remote-execution]] — execution once you're through
+- [[beaconing]] — the C2 heartbeat, its shape, and how it's detected
+- [[cobalt-strike]] / [[meterpreter]] — the reference C2 framework and payload

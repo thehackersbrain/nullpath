@@ -46,7 +46,7 @@ See [[sccm-abuse]].
 ## Step 2 — Check what the NAA can actually do
 ```bash
 # Validate the cred and check group membership / rights
-crackmapexec smb <dc-ip> -u NAA_USER -p 'NAA_PASS' --groups
+nxc smb <dc-ip> -u NAA_USER -p 'NAA_PASS' groups
 bloodhound-python -u NAA_USER -p 'NAA_PASS' -d corp.local -c All -ns <dc-ip>
 ```
 NAA accounts are scoped for *reading* Distribution Point shares, but in

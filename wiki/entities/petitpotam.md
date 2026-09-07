@@ -75,6 +75,7 @@ PetitPotam.py <attacker-ip> <dc>
 ## Links
 
 - [[ntlm-relay-coercion]] — the coercion + relay hub
+- [[esc8]] — the AD CS relay technique PetitPotam feeds
 - [[esc8-ntlm-relay-adcs]] — the full ESC8 chain (PetitPotam → relay → cert → DCSync)
 - [[ntlmrelayx]] — the relay listener it pairs with
 - [[dcsync]] — the DC machine account's privilege the chain harvests

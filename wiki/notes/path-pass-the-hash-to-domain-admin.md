@@ -77,7 +77,7 @@ wmiexec.py -hashes <lm>:<nt> corp.local/A@<tier0-host>   # quieter (DCOM)
 atexec.py  -hashes <lm>:<nt> corp.local/A@<tier0-host>   # via Task Scheduler (no service)
 ```
 **Verify:** a shell on `<tier0-host>` as `A` (local admin). See [[smb]] for
-the exec transports and [[crackmapexec]] for mass PtH across many hosts.
+the exec transports and [[netexec]] for mass PtH across many hosts.
 
 ### Failure modes & fallbacks
 - **`A` is local admin but not SYSTEM** — fine; privesc locally to SYSTEM if
@@ -134,7 +134,7 @@ See [[golden-silver-tickets]]. **Verify:** `whoami /all` lists
 - [[pass-the-hash-and-ticket]] — the PtH/PtT primitive (steps 1-2)
 - [[ntlm]] — why the hash is the credential
 - [[smb]] — the exec transport (psexec/wmiexec/atexec)
-- [[crackmapexec]] — mass PtH / exec
+- [[netexec]] — mass PtH / exec
 - [[overpass-the-hash]] — the Kerberos alternative (same hash, real TGT)
 - [[dcsync]], [[krbtgt]], [[golden-silver-tickets]] — steps 3-4
 - [[ntds-dit]] — the offline-dump fallback if `A` lacks DCSync

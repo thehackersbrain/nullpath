@@ -128,6 +128,7 @@ of the three is, the attributes that carry it, and how to detect/harden it.
 - [[acl-abuse]] — the attribute-write pivot (GenericAll/WriteDacl/GenericWrite)
 - [[mitm6-ipv6-relay]] — the credential-less TGT coercion that fuels RBCD
 - [[dcsync]] — the high-value *target* of a UDE-to-DC pivot
+- [[unconstrained-delegation]] — the UDE abuse mechanics (TGT capture → UnPAC → DCSync)
 - [[path-unconstrained-delegation-to-domain-admin]] — the UDE end-to-end chain
 - [[path-constrained-delegation-to-domain-admin]] — the CDE end-to-end chain
 - [[path-mitm6-rbcd-to-local-admin]] — the credential-less RBCD chain

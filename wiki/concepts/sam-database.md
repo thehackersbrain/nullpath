@@ -82,6 +82,7 @@ psexec.py -hashes <lm>:<nt> DOMAIN/Administrator@<other-host>
 
 ## Links
 
+- [[credential-dumping]] — the on-host secret stores map (SAM is the local offline one)
 - [[laps]] — the local admin password it often holds (and how to read it from AD)
 - [[lsass]] — the in-memory credential store (complementary dump)
 - [[ntds-dit]] — the domain-side credential store

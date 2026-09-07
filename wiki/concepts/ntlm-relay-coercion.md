@@ -123,11 +123,15 @@ Note: relaying to LDAP for account-creation/attribute-write requires
 - [[ad-cs-esc-attacks]] — ESC8/ESC11 relay targets
 - [[esc8-ntlm-relay-adcs]] — full PetitPotam → ESC8 → DCSync chain
 - [[printer-bug]] — the spooler coercion vector (CVE-2021-34527)
+- [[esc8]] — relay to AD CS web enrollment → DCSync
 - [[wpad]] — the ambient WPAD capture that feeds a relay
-- [[responder]] — the LLMNR/NBNS capture that feeds a relay
+- [[llmnr-nbt-ns-poisoning]] — the LLMNR/NBNS capture that feeds a relay
+- [[responder]] — the LLMNR/NBNS capture tool
 - [[rbcd-via-ntlm-relay]] — mitm6/WPAD → LDAP relay → RBCD, no creds needed
 - [[kerberos-delegation-abuse]] — RBCD mechanics once delegation rights are set
 - [[sccm-abuse]] — SCCM MP as a relay target
+- [[potato-family]] — the *local* pipe-coercion sibling (any user → SYSTEM, no relay)
+- [[named-pipe-hijacking]] — the pipe primitive the local side drives
 
 ## References
 

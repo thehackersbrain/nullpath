@@ -62,7 +62,9 @@ Rubeus.exe triage
 
 - **Sysmon Event 10** (Process Access) — a non-system process (especially
   `svchost`, `conhost`, or an attacker binary) opening `lsass.exe` with
-  `PROCESS_VM_READ` (`0x10`) is the high-fidelity tell.
+  `PROCESS_VM_READ` (`0x10`) is the high-fidelity tell. Sysmon is the
+  telemetry source ([[sysmon]]); the rule that fires on it is a Sigma
+  detection ([[sigma]]).
 - **Event 4688** with a command line containing `procdump`/`-ma lsass` /
   `MiniDump`.
 - A new `lsass.dmp` file written to disk (4663 / 11 file creation).
@@ -81,6 +83,7 @@ Rubeus.exe triage
 
 ## Links
 
+- [[credential-dumping]] — the on-host secret stores map (LSASS is the online one)
 - [[pass-the-hash-and-ticket|PtH/PtT]] — the techniques a dump feeds
 - [[pass-the-key|PtK]] — the AES/RC4 keys in the dump
 - [[ntds-dit]] — the AD-side analog (domain creds, not host creds)
@@ -89,6 +92,9 @@ Rubeus.exe triage
 - [[ad-tiering-and-hardening]] — Credential Guard / PPL mitigations
 - [[skeleton-key]] — the in-memory LSASS patch on a DC (Skeleton Key persistence)
 - [[gmsa]] — gMSA keys are cached here on the *host* running the service (a dump target)
+- [[process-injection]] — dumping LSASS from *another* process's context (hollowing/stomping into a dumper)
+- [[meterpreter]] — the payload that runs the live `sekurlsa`-equivalent dump
+- [[defense-evasion-ad]] — the EDR/AMSI/ETW surface a live dump lands in
 
 ## References
 

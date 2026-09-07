@@ -80,6 +80,7 @@ lsadump::ntds
 
 ## Links
 
+- [[credential-dumping]] — the on-host secret stores map (NTDS is the domain offline one)
 - [[dcsync]] — the online (no-disk) way to get the same secrets
 - [[krbtgt]] — the headline secret in the dump (Golden Ticket)
 - [[pass-the-hash-and-ticket|PtH/PtT]], [[pass-the-key|PtK]] — what you do with the hashes

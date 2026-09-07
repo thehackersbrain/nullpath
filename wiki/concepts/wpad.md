@@ -85,6 +85,7 @@ never needs a password — they just need a **network/DNS position** and a
 ## Links
 
 - [[evilwpad]] — the canonical rogue-WPAD tool (PAC serve + NTLM capture + LDAP/RBCD relay)
+- [[llmnr-nbt-ns-poisoning]] — the LLMNR/NBNS (no DNS-record, no browser) capture sibling
 - [[responder]] — the LLMNR/NBNS/mDNS (no DNS-record) capture sibling
 - [[mitm6-ipv6-relay]] — the IPv6 DHCPv6 WPAD variant (the "no DNS write" path)
 - [[rbcd-via-ntlm-relay]] — the credential-less RBCD chain WPAD feeds

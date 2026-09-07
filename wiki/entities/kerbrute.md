@@ -13,7 +13,7 @@ tool** — the fast, low-and-slow password-spray and user-existence oracle for
 AD. It operates purely at the **AS-REQ** stage (no SMB/WinRM needed, works
 across the KDC), so it's the go-to for credential spraying and confirming
 which accounts exist before a full attack. It's the enumeration companion to
-[[crackmapexec]] (SMB/WinRM spray) and feeds the hash/key capture that
+[[netexec]] (SMB/WinRM spray) and feeds the hash/key capture that
 [[kerberoasting]] / [[dcsync]] / [[overpass-the-hash]] consume.
 
 ## Capabilities
@@ -72,7 +72,7 @@ kerbrute kerberoast -d corp.local -dc dc01.corp.local users.txt
 - [[kerberoasting]], [[as-rep-roasting]] — the enumeration targets
 - [[service-principal-name]] — the SPN list kerberoast mode builds
 - [[overpass-the-hash]] — what a sprayed/cracked hash feeds into
-- [[crackmapexec]] — the SMB/WinRM spray counterpart
+- [[netexec]] — the SMB/WinRM spray counterpart
 - [[kerberos-preauth]] — the pre-auth-disabled surface asrep mode targets
 - [[dcsync]] — the next stage once a good cred is found
 

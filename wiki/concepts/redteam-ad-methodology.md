@@ -31,7 +31,10 @@ collection tradecraft. Primary building blocks: [[ldap]], [[smb]],
 ### 2. Foothold / initial access
 First domain credential or shell. Often from a captured hash
 ([[ntlm-relay-coercion]], [[mitm6-ipv6-relay]]), a sprayed/guessed password
-([[kerbrute]]), or a pre-auth-less account ([[as-rep-roasting]]).
+([[kerbrute]]), or a pre-auth-less account ([[as-rep-roasting]]). On the
+foothold box itself the immediate next step is **local** privesc —
+[[windows-privilege-escalation]] — because local admin is what unlocks
+[[credential-dumping]] and, downstream, the coercion and lateral phases below.
 
 ### 3. Credential access
 Turn a foothold into more identities: [[kerberoasting]], [[as-rep-roasting]],
@@ -77,3 +80,5 @@ flow doubles as the checklist for validating that hardening.
 - [[defense-evasion-ad]] — running tooling against EDR/AMSI/ETW
 - [[c2-and-pivoting-ad]] — tunnelling AD tooling from an operator host
 - [[ticket-and-credential-opsec]] — handling tickets and loot
+- [[reverse-engineering-workflow]] — the RE/malware-domain analog of this arc (static → dynamic → detection)
+- [[windows-privilege-escalation]] — the local (on-box) privesc step that runs between foothold and the domain phases above

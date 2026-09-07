@@ -17,11 +17,15 @@ detection engineering / adversary emulation.
 ## The three host sensors
 
 - **AMSI** — scans script/.NET content at runtime (PowerShell, `Add-Type`,
-  `execute-assembly`). Signatures catch known tool strings.
+  `execute-assembly`). Signatures catch known tool strings. Full mechanism
+  and bypasses: [[amsi]].
 - **ETW** — `Microsoft-Windows-DotNETRuntime` and threat-intel providers feed
-  EDR with in-process telemetry (assembly loads, API calls).
+  EDR with in-process telemetry (assembly loads, API calls). Full mechanism
+  and evasion: [[etw]].
 - **EDR user-mode hooks / kernel callbacks** — flag suspicious API sequences
-  (LSASS access, remote thread injection, handle duplication).
+  (LSASS access, remote thread injection, handle duplication). The
+  "skip the hook" answer is [[windows-syscalls]]; the injection shapes
+  themselves are [[process-injection]].
 
 ## Tradecraft principles
 
@@ -39,6 +43,13 @@ detection engineering / adversary emulation.
 - **LOLBAS over custom binaries** for movement/execution
   ([[remote-execution]]) — signed, expected binaries generate less telemetry
   than dropped tools.
+- **Local privesc is quiet via files/registry, not memory.** A
+  [[service-privesc|service-path write]], a [[scheduled-task-abuse|task
+  update]], or a [[dll-hijacking-sideloading|sidecar DLL]] under a trusted
+  parent leaves a *plausible-admin* footprint and is quieter than an in-memory
+  token trick on a young EDR; [[uac-bypass]] and the
+  [[environment-variable-attack|PATH/PATHEXT]] drop are the low-noise first
+  rungs. See [[windows-privilege-escalation]].
 - **Operate remotely.** Much AD tooling (Impacket, Certipy, bloodhound-python)
   runs from your Linux operator host over a tunnel
   ([[c2-and-pivoting-ad]]), so AMSI/ETW/EDR on the target never sees it — only
@@ -58,3 +69,8 @@ those detection sections — knowing the evasion is how you write the detection.
 - [[lsass]] — the artefact most of this avoids touching
 - [[c2-and-pivoting-ad]] — keeping tooling off the target entirely
 - [[remote-execution]] — LOLBAS-friendly movement
+- [[amsi]] / [[etw]] — the two host sensors, in depth (mechanism + bypasses)
+- [[windows-syscalls]] — calling the kernel direct, past the user-mode hook
+- [[process-injection]] — the injection techniques the EDR shapes are built to catch
+- [[beaconing]] — the C2 heartbeat this evasion exists to protect
+- [[windows-privilege-escalation]] — the local-privesc vectors (UAC / DLL / service / task / Potato) and their footprints

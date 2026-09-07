@@ -261,6 +261,24 @@ Full chain (PetitPotam coercion → relay → cert → DCSync) is detailed in
 - **ForgeCert** — forges certs given a compromised CA private key
 - **AdcsHunter** — PowerShell AD CS discovery
 
+## Per-ESC deep-dive pages
+
+- [[esc1]] — SAN + no SID (the classic)
+- [[esc2]] — enrollment by a computer account
+- [[esc3]] — MS-Enroll-Service / Machine template
+- [[esc4]] — ACL abuse on the template (WriteDacl)
+- [[esc5]] — CA object / CA server ACL (ManageCA via WriteDacl)
+- [[esc6]] — EDITF_ATTRIBUTESUBJECTALTNAME2 (template or CA-wide)
+- [[esc7]] — ManageCA / ManageCertificates
+- [[esc8]] — NTLM relay to web enrollment
+- [[esc9]] — template omits the security extension (no SID)
+- [[esc10]] — weak certificate binding (CertificateMappingMethods)
+- [[esc11]] — NTLM relay to RPC ICPR
+- [[esc12]] — CA admin key access (CVE-2022-26923 / key in the open)
+- [[esc13]] — issuance policy linked to a privileged group
+- [[esc14]] — weak explicit mapping via altSecurityIdentities
+- [[esc15]] — EKUwu / CVE-2024-49019 (V1 template default policy)
+
 ## Links
 
 - [[certify]] — the Go Certify tool (twin of certipy)

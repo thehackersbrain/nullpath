@@ -378,3 +378,78 @@ OPSEC" block on [[bloodhound]]. Each ties targeting/enctype/tooling-by-context/
 remote-operation into that page's own Detection section (no separate ops pages).
 Added red-team reference sources: [[certified-pre-owned]], [[the-hacker-recipes]],
 [[adsecurity-org]], [[harmj0y-blog]], [[dirkjanm-blog]].
+
+## [2026-09-07] update | NetExec rename + AD CS ESC family completion + new techniques
+
+CrackMapExec is unmaintained — replaced with NetExec. Renamed
+`wiki/entities/crackmapexec.md` → [[netexec]] (canonical CLI `nxc`; `cme`
+retired; `-M` module syntax, `-x`/`-X` exec, spider/LSASS/Mimikatz modules,
+BloodHound ingestor). Updated every `[[crackmapexec]]` wikilink and the
+`crackmapexec smb` command examples to `nxc` (kerbrute, mvictor, bloodhound,
+smb, remote-execution, path-sccm-naa, path-pass-the-hash); lateral chip in
+taxonomy updated. Added 15 concept pages: the remaining ESC family
+([[esc5]], [[esc7]], [[esc8]], [[esc9]], [[esc10]], [[esc11]], [[esc12]],
+[[esc13]], [[esc14]], [[esc15]] — completing ESC1–15 with per-ESC deep-dive
+pages linked from [[ad-cs-esc-attacks]]), [[golden-certificate]] (CA key /
+rogue CA PKINIT persistence), [[kerberos-event-ids]] (4768/4769/4770/4771 +
+NTLM-side events, per-attack tell table), [[llmnr-nbt-ns-poisoning]] (the
+Responder technique: LLMNR/NBT-NS spoofing → NTLM capture/relay),
+[[credential-dumping]] (on-host secret stores map + online/offline dump
+postures), [[unconstrained-delegation]] (UDE abuse mechanics: TGT capture →
+TGS-to-DC → UnPAC → DCSync). Wired backlinks: responder/wpad/mitm6/
+ntlm-relay-coercion → llmnr, printer-bug/petitpotam → esc8, kerberos-
+delegation → unconstrained-delegation, lsass/sam/ntds → credential-dumping.
+Added [[procdump]] entity (Sysinternals LSASS dumper); fixed the one
+dangling wikilink that remained ([[unconstrained-delegation]] →
+[[path-mitm6-rbcd-to-local-admin]]). Filled the index (15 new pages + 12
+previously-unindexed pages: esc1-4/6,
+certificate-templates, certificate-mapping, ntauthcertificates,
+pki-and-ad-cs-architecture, the 7 AD-ops pages) and the taxonomy (full AD CS
+section, new "AD Ops & Methodology" section).
+
+## [2026-09-07] ingest | Reverse-engineering & malware domain + C2/evasion/detection
+
+New wiki domain: reverse engineering / malware development / C2. Added 12
+concept pages: [[reverse-engineering-workflow]] (the static+dynamic analysis
+arc, the RE-domain analog of [[redteam-ad-methodology]]), [[pe-executable]]
+(PE headers/IAT/sections/entropy), [[shellcode]] (x64 PEB-walk bootstrap,
+calling convention, stack alignment, null-byte avoidance), [[api-hashing]]
+(djb2 nameless API resolution), [[process-injection]] (remote thread / APC /
+hollowing / module stomping / thread hijack / callback injection),
+[[windows-syscalls]] (direct `Nt*`/`syscall` past the user-mode hook, the
+layer ETW survives), [[anti-debugging]] (PEB flags / IsDebuggerPresent /
+timing / Int3 + the anti-anti-debugging race), [[anti-analysis]] (CPUID /
+uptime / MAC / count + time-bomb & multi-stage), [[packer-unpacking]] (stub /
+payload / OEP, OEP find + dump, anti-unpacking), [[amsi]] (PowerShell/.NET
+script-scan + patch/hook bypasses), [[etw]] (kernel event-bus, session-kill /
+provider-disable / callback-removal + VBS counter), [[beaconing]] (C2
+heartbeat: periodicity, jitter, small-request/command-response shape +
+detection). Added 7 entity pages: [[ghidra]] (static RE), [[x64dbg]]
+(dynamic RE), [[upx]] (reference packer), [[cobalt-strike]] (C2 framework),
+[[meterpreter]] (post-exploitation payload), [[sysmon]] (host telemetry),
+[[sigma]] (detection-rule language). Wired backlinks: defense-evasion-ad →
+amsi/etw/windows-syscalls/process-injection/beaconing; c2-and-pivoting-ad →
+beaconing/cobalt-strike/meterpreter; lsass + credential-dumping →
+process-injection/meterpreter/sysmon/sigma/defense-evasion-ad; redteam-ad-
+methodology → reverse-engineering-workflow. Index filled (12 concepts + 7
+tools) and taxonomy gained two sections: "Reverse Engineering & Malware" and
+"C2, Evasion & Host Detection".
+
+## [2026-09-07] ingest | Windows local privesc domain
+
+New domain (AD-specialized wiki, Windows host focus): winning the box —
+low-priv → local admin/SYSTEM — and keeping it. Added 10 concept pages:
+[[windows-privilege-escalation]] (the hub: enumeration, technique map, the
+AD bridge, detection), [[uac-bypass]], [[token-privilege-escalation]] (the
+SeImpersonate + SYSTEM-pipe model behind the printer bug), [[service-privesc]],
+[[scheduled-task-abuse]], [[named-pipe-hijacking]], [[dll-hijacking-sideloading]],
+[[environment-variable-attack]], [[potato-family]] (Coerced Pipe Impersonation,
+Rotten/God/Juicy/ODD/BOOM), and [[windows-local-persistence]] (Run keys,
+services, tasks, WMI, COM, IFEO). Added 1 entity page: [[winpeas]] (local
+privesc sweeper). Wired backlinks: redteam-ad-methodology → local privesc as
+the on-foothold step; defense-evasion-ad → the quiet local-privesc vectors;
+printer-bug → token-privilege-escalation/named-pipe-hijacking/potato-family;
+remote-execution + situational-awareness + credential-dumping →
+windows-privilege-escalation; ntlm-relay-coercion → the local
+pipe-coercion sibling. Index filled (10 concepts + 1 tool) and taxonomy gained
+a "Windows Local Privesc & Host" section (hue 265, before Lateral).

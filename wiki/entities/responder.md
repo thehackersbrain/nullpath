@@ -76,6 +76,7 @@ on a target (the credential-less RBCD). See [[ntlm-relay-coercion]].
 
 ## Links
 
+- [[llmnr-nbt-ns-poisoning]] — the technique Responder exploits (LLMNR/NBT-NS spoofing)
 - [[mitm6-ipv6-relay]] — the IPv6 DHCPv6 sibling (same "no-creds RBCD" goal)
 - [[wpad]] — the HTTP/WPAD capture sibling
 - [[rbcd-via-ntlm-relay]] — the RBCD endgame `-A` drives

@@ -105,7 +105,7 @@ The analysis is offline and silent — **all** the noise is in collection:
 - [[acl-abuse]] — the object-control edges it visualizes
 - [[dcsync]], [[laps]], [[sid-history]], [[kerberos-delegation-abuse]] — the DCSync/HasLAPS/SIDHistory/AllowedToAct edges
 - [[ad-cs-esc-attacks]] — cert template edges (via the CS collector)
-- [[crackmapexec]] — the companion for exec/scanning
+- [[netexec]] — the companion for exec/scanning (with native BH2 ingest)
 - [[ad-tiering-and-hardening]] — the structural fix for the paths it finds
 - [[adrecon]] — the broad object+rights recon dump (wide-net complement)
 

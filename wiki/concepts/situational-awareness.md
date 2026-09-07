@@ -23,8 +23,11 @@ whoami /priv           # SeImpersonate / SeBackup / etc. — local privesc primi
 ```
 
 Key questions: local admin? which groups (any that map to a Tier-0 path)?
-which privileges (SeImpersonate → potato; SeBackup → [[ntds-dit]])? what
-integrity/AMSI/EDR context (feeds [[defense-evasion-ad]])?
+which privileges (SeImpersonate → [[potato-family]]; SeBackup →
+[[ntds-dit]])? what integrity/AMSI/EDR context (feeds
+[[defense-evasion-ad]])? Then run the local-privesc sweep ([[winpeas]]
+`-q`) to see which [[windows-privilege-escalation|local privesc]] vectors the
+box actually exposes before you pick your next move.
 
 ## The domain, quietly
 
@@ -63,3 +66,5 @@ become findings regardless of whether you exploit them.
 - [[bloodhound-opsec]] — the graph-collection step after SA
 - [[opsec-ad-tradecraft]] — how loudly to act on what you find
 - [[ad-tier-model]] — where your context sits
+- [[windows-privilege-escalation]] — the local-privesc sweep the on-host SA feeds into
+- [[winpeas]] — the enumeration tool for that sweep

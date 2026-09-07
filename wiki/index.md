@@ -2,7 +2,7 @@
 title: Index
 type: note
 created: 2026-06-12
-updated: 2026-09-06
+updated: 2026-09-07
 tags: [meta]
 ---
 
@@ -150,6 +150,97 @@ first when answering queries.
   DSRM backdoor); replication-delivered writes that mute the LDAP audit
 - [[skeleton-key]] — the DC LSASS memory patch that accepts a static master
   key; survives krbtgt rotation
+- [[pki-and-ad-cs-architecture]] — CAs, templates, enrollment agents,
+  NTAuth: the AD CS moving parts before the ESCs
+- [[certificate-templates]] — template flags/EKUs and which flags make a
+  template dangerous (the ESC flag table)
+- [[certificate-mapping]] — how a cert maps to an AD account (implicit vs
+  explicit, SID binding, enforcement modes)
+- [[ntauthcertificates]] — the forest client-auth trust store (rogue CA =
+  domain-wide forgery)
+- [[golden-certificate]] — the cert analog of the golden ticket (CA key or
+  rogue CA → PKINIT as anyone)
+- [[esc1]] — enrollee-supplied SAN on a client-auth template (the classic)
+- [[esc2]] — Any Purpose / no-EKU template
+- [[esc3]] — Certificate Request Agent (enroll on behalf of)
+- [[esc4]] — writable certificate-template ACL
+- [[esc5]] — CA object / CA server ACL (ManageCA via WriteDacl)
+- [[esc6]] — EDITF_ATTRIBUTESUBJECTALTNAME2 (template- or CA-wide SAN)
+- [[esc7]] — ManageCA / ManageCertificates (CA management rights)
+- [[esc8]] — NTLM relay to AD CS web enrollment (PetitPotam → DCSync)
+- [[esc9]] — template omits the security extension (no SID binding)
+- [[esc10]] — weak certificate binding (CertificateMappingMethods)
+- [[esc11]] — NTLM relay to RPC ICPR enrollment
+- [[esc12]] — CA admin key access (CVE-2022-26923 / key in the open)
+- [[esc13]] — issuance policy linked to a privileged group
+- [[esc14]] — weak explicit mapping via altSecurityIdentities
+- [[esc15]] — EKUwu / CVE-2024-49019 (V1 template default policy)
+- [[unconstrained-delegation]] — UDE abuse mechanics: TGT capture → TGS to
+  DC → UnPAC the DC hash → DCSync
+- [[kerberos-event-ids]] — 4768/4769/4770/4771 + 4776/4648/4624: the field
+  values and the per-attack tells
+- [[llmnr-nbt-ns-poisoning]] — LLMNR/NBNS name-resolution spoofing → NTLM
+  capture/relay (the Responder technique)
+- [[credential-dumping]] — the on-host secret stores map (LSASS/SAM/NTDS/DPAPI)
+  and online vs offline dump postures
+- [[redteam-ad-methodology]] — the operational kill-chain arc of an AD
+  engagement (recon → foothold → pivots → dominance → persistence)
+- [[situational-awareness]] — post-foothold AD recon: who/what/where before
+  you move
+- [[c2-and-pivoting-ad]] — operating AD tradecraft from a Linux host over a
+  tunnel (tool transport, proxychains, pivoting)
+- [[defense-evasion-ad]] — EDR/AMSI/ETW evasion for AD tooling (Rubeus,
+  Certipy, Mimikatz, SharpHound)
+- [[opsec-ad-tradecraft]] — operating without tripping the SOC (the cross-
+  technique OPSEC hub)
+- [[bloodhound-opsec]] — quiet SharpHound collection tradecraft
+- [[ticket-and-credential-opsec]] — ticket/credential handling hygiene on an
+  engagement (store, use, burn, clean up)
+- [[reverse-engineering-workflow]] — static + dynamic malware analysis arc
+  (triage → decompile → run/dump → detection write-up)
+- [[pe-executable]] — the Windows PE format: headers, IAT, sections, entropy
+  — the structure anti-analysis hides
+- [[shellcode]] — position-independent x86/x64 payloads: PEB-walk bootstrap,
+  calling convention, stack alignment, null-byte avoidance
+- [[api-hashing]] — resolve APIs by name-hash (djb2) without strings; the
+  string-free import table
+- [[process-injection]] — running code in another process: remote thread,
+  APC, hollowing, module stomping, thread hijack, callback injection
+- [[windows-syscalls]] — direct `Nt*`/`syscall` calls past the user-mode
+  hook (the EDR hook the API-skip beats, and the layer that survives it)
+- [[anti-debugging]] — the debugger checks (PEB flags, IsDebuggerPresent,
+  timing, Int3) and how they're defeated
+- [[anti-analysis]] — the VM/sandbox checks (CPUID, uptime, MAC, count) and
+  the time-bomb/multi-stage that beat the 60s run
+- [[packer-unpacking]] — stub + payload + OEP; finding the OEP, dumping the
+  unpacked image, the anti-unpacking race
+- [[amsi]] — the PowerShell/.NET script-scan API and its bypasses (patch,
+  hook, the clean-result anomaly)
+- [[etw]] — the kernel event-bus EDRs subscribe to; session-kill / provider-
+  disable / callback-removal and the VBS counter
+- [[beaconing]] — the C2 heartbeat: periodicity, jitter, the small-request/
+  command-response shape, and how it's detected
+- [[windows-privilege-escalation]] — Windows local privesc hub: foothold →
+  local admin → the AD chain it unlocks (enumeration, technique map, AD
+  bridge, detection)
+- [[uac-bypass]] — defeating UAC to gain an elevated token (the low-priv →
+  admin rung on a logged-on box)
+- [[token-privilege-escalation]] — stealing/impersonating a higher-priv
+  process token (the SeImpersonate + SYSTEM-pipe model behind the printer bug)
+- [[service-privesc]] — writable service binary / binPath / SCOM / unquoted
+  path → admin
+- [[scheduled-task-abuse]] — writable scheduled task (or `atexec`/`schtasks`
+  as a privesc + lateral vehicle)
+- [[named-pipe-hijacking]] — impersonate over a pipe a SYSTEM process opens
+  (the primitive the Potato family and the printer bug drive)
+- [[dll-hijacking-sideloading]] — DLL search-order / sidecar-DLL abuse to run
+  under a trusted parent
+- [[environment-variable-attack]] — PATH/PATHEXT manipulation to execute in a
+  privileged context
+- [[potato-family]] — Coerced Pipe Impersonation (Rotten/God/Juicy/ODD/BOOM):
+  any local user → SYSTEM on modern Windows
+- [[windows-local-persistence]] — host-level persistence (Run keys, services,
+  tasks, WMI, COM, IFEO) to keep the local foothold alive
 
 ## Entities
 
@@ -163,6 +254,8 @@ first when answering queries.
   GetST, etc.)
 - [[secretsdump]] — NTDS/SAM dumper: remote DCSync (`-just-dc-user krbtgt`)
   + offline VSS-hive parsing (gMSA + trust keys in the output)
+- [[procdump]] — Sysinternals process-memory dumper (the `procdump -ma
+  lsass.exe` dump that mimikatz parses)
 - [[certipy]] — AD CS attack tool (find/find-ca, req)
 - [[bloodhound]] — AD attack-path graph (SharpHound ingest, path queries)
 - [[powerview]] — PowerShell AD enumeration (Get-DomainObject, ACL queries)
@@ -170,7 +263,8 @@ first when answering queries.
 - [[ntlmrelayx]] — the NTLM relay engine (AD CS, RBCD, addcomputer targets)
 - [[mitm6]] — the IPv6 MITM/relay tool (WPAD, LDAPS RBCD)
 - [[whisker]] — Shadow Credentials tool (plant/UnPAC the NT hash)
-- [[crackmapexec]] — NetExec/CME mass scanning + execution (SMB/WinRM)
+- [[netexec]] — mass scanning + execution (SMB/WinRM/LDAP); NetExec (`nxc`),
+  the actively maintained successor to the unmaintained CrackMapExec (`cme`)
 - [[hashcat]] — GPU offline password cracker (the roast/dump hash modes)
 - [[john-the-ripper]] — CPU offline cracker (the JtR formats for
   kerberoast/AS-REP/NTLM/krbtgt)
@@ -178,6 +272,8 @@ first when answering queries.
 - [[dasync]] — DCSync via MS-DRSR to a local DB (the targeted dcsync tool)
 - [[powerupack]] — the Windows offensive suite (Privesc, SharpGPOAbuse,
   GPOHound)
+- [[winpeas]] — the local Windows privesc + recon sweeper (the single-pass
+  post-foothold enumeration for every local-privesc vector)
 - [[sharp-gpo-abuse]] — write malicious GPO preferences for linked-machine
   code exec
 - [[gpohound]] — GPO attack-surface enumeration (writable GPOs → linked
@@ -192,6 +288,20 @@ first when answering queries.
 - [[adrecon]] — .NET AD recon (objects, ACLs, replication rights, trusts)
 - [[krb5pac]] — Kerberos PAC manipulation (UnPAC the hash, SID History,
   RBCD TGS forgery)
+- [[ghidra]] — the NSA open-source RE suite (decompiler, XREFs, headless
+  batch analysis, the static-analysis default)
+- [[x64dbg]] — the free x64 debugger (API monitor, OEP find, anti-debugging
+  defeat, the dynamic-analysis default)
+- [[upx]] — the reference open-source packer (documented stub, `upx -d`
+  de-pack; the teaching model for packer/unpacker)
+- [[cobalt-strike]] — the commercial red-team C2 framework (beacon, malleable
+  profile, the post-exploitation suite)
+- [[meterpreter]] — the in-memory post-exploitation payload (stager/stage,
+  the C2's hands on the host)
+- [[sysmon]] — the host-telemetry standard (Process Access, File Create,
+  Network Connect, Driver Load) the detection runs on
+- [[sigma]] — the vendor-agnostic detection-rule language (YAML rules →
+  Splunk/Elastic/Sysmon)
 
 ### CVEs
 

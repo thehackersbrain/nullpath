@@ -67,7 +67,7 @@ Get-SCCMDiscoveryData ...
 - [[sccm-abuse]] — the SCCM surface Mvictor abuses
 - [[path-sccm-naa-to-domain-admin]] — the NAA credential-recovery chain
 - [[pxethief]], [[wdsfilecrawler]] — the PXE/WDS credential tools in the same family
-- [[crackmapexec]] — the "normal" lateral-movement path Mvictor bypasses
+- [[netexec]] — the "normal" lateral-movement path Mvictor bypasses
 - [[ad-tiering-and-hardening]] — the structural (tiering) mitigation
 
 ## References

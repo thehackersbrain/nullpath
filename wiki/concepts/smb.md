@@ -58,7 +58,7 @@ atexec.py  -hashes <lm>:<nt>  CORP/user@<target>     # via the Task Scheduler (n
 ```
 Each needs the credential to be **valid for the target** (a local account, or a
 domain account that's local admin there). See [[pass-the-hash-and-ticket]] for
-the PtH/PtT mechanics and [[crackmapexec]] for mass exec/scanning across many
+the PtH/PtT mechanics and [[netexec]] for mass exec/scanning across many
 targets.
 
 ### Why SMB is the default lateral path
@@ -87,7 +87,7 @@ targets.
 - **SMB from a non-Windows source IP** — Linux doing SMB (Impacket) is a
   strong tell.
 - **Mass SMB exec** — many `IPC$`/`ADMIN$` connects from one host
-  ([[crackmapexec]]).
+   ([[netexec]]).
 
 ## Mitigations
 
@@ -105,7 +105,7 @@ targets.
 - [[ntlm]] — the auth SMB carries (and what signing protects)
 - [[ntlm-relay-coercion]] — the relay family SMB signing gates
 - [[mitm6-ipv6-relay]] — the coercion that feeds an SMB relay
-- [[crackmapexec]] — mass SMB scanning/exec
+- [[netexec]] — mass SMB scanning/exec
 - [[impacket]] — the `psexec`/`wmiexec`/`smbexec`/`atexec` scripts
 - [[ad-tiering-and-hardening]] — the signing/encryption controls
 - [[remote-execution]] — the full exec-transport decision table SMB's tools sit in

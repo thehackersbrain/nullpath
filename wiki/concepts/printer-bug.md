@@ -89,6 +89,7 @@ victim's Print Spooler (LocalSystem)
 ## Links
 
 - [[ntlm-relay-coercion]] — the coercion + relay hub this feeds
+- [[esc8]] — coerce the DC → relay to AD CS → DCSync (the AD CS endgame)
 - [[rbcd-via-ntlm-relay]] — the credential-less RBCD chain the coerced NTLM enables
 - [[ntlmrelayx]] — the relay that captures/replays the machine NTLM
 - [[ntlm]] — the machine-account NTLM that gets coerced
@@ -97,3 +98,6 @@ victim's Print Spooler (LocalSystem)
 - [[mitm6-ipv6-relay]] — the IPv6 coercion alternative
 - [[impacket]] — `PrinterBug.py` / `PrinterBug445.py`
 - [[smb]] — the channel the coerced machine account authenticates over
+- [[token-privilege-escalation]] — the same spooler coercion used *locally* to impersonate to SYSTEM (PrintSpoofer) instead of relaying to LDAP
+- [[named-pipe-hijacking]] — the pipe the coerced spooler opens is the hijack target
+- [[potato-family]] — the modern Coerced Pipe successor once this is patched

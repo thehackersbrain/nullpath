@@ -83,6 +83,7 @@ transport. Correlate the logon (4624) with the process/service creation.
 - [[tgt-tgs]] — a TGS's SPN constrains which transports a forged ticket can use
 - [[sccm-abuse]] — WinRM/PSRemoting as the SCCM lateral surface
 - [[pass-the-hash-and-ticket]] — the PtH/PtT that feeds these transports
-- [[crackmapexec]] — mass SMB/WinRM/SMB exec across a subnet
+- [[netexec]] — mass SMB/WinRM exec across a subnet
 - [[ad-tier-model]] — why the *destination* tier of each exec matters
 - [[lsass]] — what you typically go to a box *to get* once you have exec
+- [[windows-privilege-escalation]] — if the exec lands you low-priv, this is the on-box step before you can dump/coerce/move

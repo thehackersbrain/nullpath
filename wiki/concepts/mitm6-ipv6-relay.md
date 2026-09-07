@@ -95,6 +95,8 @@ mitm6 -i eth0 --relay-host dc01.corp.local --wpad --ldaps
 - [[esc8-ntlm-relay-adcs]] — relay to AD CS for a cert
 - [[dirkjanm]] — the author + the "worst of both worlds" write-ups
 - [[s4u2self-s4u2proxy]] — the S4U2Self the RBCD chain ends in
+- [[unconstrained-delegation]] — the UDE-to-DC abuse the captured TGT enables
+- [[llmnr-nbt-ns-poisoning]] — the IPv4 name-resolution capture sibling
 - [[wpad]] — the WPAD capture mitm6 drives (the IPv6/DHCPv6 variant)
 - [[responder]] — the IPv4 LLMNR/NBNS capture sibling
 - [[evilwpad]] — the IPv4 rogue-WPAD capture sibling (needs the `wpad` DNS record)
