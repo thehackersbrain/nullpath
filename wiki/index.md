@@ -1,0 +1,264 @@
+---
+title: Index
+type: note
+created: 2026-06-12
+updated: 2026-09-06
+tags: [meta]
+---
+
+# Index
+
+Catalog of all wiki pages. Updated on every ingest. The agent reads this
+first when answering queries.
+
+## Sources
+
+- [[kerberoasting]] — crack TGS tickets to recover service account
+  passwords (Event 4769, RC4 downgrade)
+- [[as-rep-roasting]] — crack AS-REP for accounts with Kerberos pre-auth
+  disabled (Event 4768, preauth type 0)
+- [[dcsync]] — abuse MS-DRSR replication rights to dump password
+  hashes/keys for any account, including krbtgt
+- [[pass-the-hash-and-ticket]] — reuse stolen NTLM hashes (PtH) or Kerberos
+  tickets (PtT) for lateral movement, no cracking needed
+- [[golden-silver-tickets]] — forge TGTs (Golden, via krbtgt secret) or TGSs
+  (Silver, via service account secret) offline
+- [[kerberos-delegation-abuse]] — unconstrained/constrained/RBCD delegation
+  misconfigurations for impersonation and privilege escalation
+- [[esc8-ntlm-relay-adcs]] — PetitPotam coercion → NTLM relay to AD CS →
+  machine cert → DCSync (full ESC8 chain)
+- [[rbcd-via-ntlm-relay]] — credential-less RBCD via mitm6/WPAD relay to
+  LDAPS (dirkjanm "worst of both worlds")
+- [[shadow-credentials]] — write msDS-KeyCredentialLink to plant a cert,
+  authenticate via PKINIT, UnPAC the NT hash
+- [[ad-forest-trust-attacks]] — SID filtering, TREAT_AS_EXTERNAL, and
+  CVE-2020-0665 forest trust transitivity bypass
+- [[gpo-abuse]] — abuse GenericWrite/WriteDacl on GPOs for domain-wide
+  code execution (SharpGPOAbuse, GPOHound, etc.)
+- [[ad-persistence-dcshadow-skeletonkey-adminsdholder]] — DCShadow,
+  Skeleton Key, DSRM backdoor, AdminSDHolder/SDProp persistence
+- [[pkinit-unpac-the-hash]] — PKINIT mechanics and recovering NT hashes
+  from PAC_CREDENTIAL_INFO via S4U2Self+U2U
+
+### Red-team reference sources
+
+- [[certified-pre-owned]] — SpecterOps AD CS whitepaper; the ESC1-8 taxonomy
+- [[the-hacker-recipes]] — ShutdownRepo AD attack cookbook (tool-forward recipes)
+- [[adsecurity-org]] — Sean Metcalf's Kerberos attack/defense research
+- [[harmj0y-blog]] — Will Schroeder's Kerberoasting/delegation/ACL research
+- [[dirkjanm-blog]] — Dirk-jan Mollema's mitm6/RBCD-relay/PKINIT research
+
+## Concepts
+
+- [[kerberos-authentication]] — core AS-REQ/AS-REP, TGS-REQ/TGS-REP flow;
+  hub page linking every attack to its protocol stage
+- [[krbtgt]] — the account whose secret signs all TGTs; central to
+  DCSync/Golden Ticket
+- [[ntlm]] — legacy challenge-response protocol abused by Pass-the-Hash
+- [[kerberoasting]] — request TGSs for SPN accounts + offline-crack the
+  service password (4769 bursts; gMSA defeats the crack, not the identity)
+- [[as-rep-roasting]] — crack accounts with pre-auth disabled (4768 type-0;
+  GetNPUsers/Rubeus asrep; the AS-REQ-stage sibling of kerberoasting)
+- [[dcsync]] — replicate any AD secret (incl. krbtgt, gMSA, trust keys) via
+  MS-DRSR with Get-Changes/Get-Changes-All (4662 replication GUIDs)
+- [[golden-silver-tickets]] — forge a TGT (Golden, krbtgt secret) or TGS
+  (Silver, service secret) offline; detection tells + krbtgt double-rotation
+- [[kerberos-delegation]] — the UDE/CDE/RBCD hub: the three attributes
+  (TrustedForDelegation / msDS-AllowedToDelegateTo /
+  msDS-AllowedToActOnBehalfOfOtherIdentity), 4769-R0 detection
+- [[gmsa]] — auto-rotated service secret: mechanics + the attack surface
+  (LSASS dump / DCSync / reset); the most-repeated mitigation
+- [[ad-tiering-and-hardening]] — tiered admin model, Protected Users,
+  Credential Guard, LAPS, AES enforcement, honeytokens — the recurring
+  hardening baseline across all techniques
+- [[acl-abuse]] — GenericAll/WriteDacl/WriteOwner/GenericWrite object
+  control abuse (BloodHound edges)
+- [[ad-cs-esc-attacks]] — AD CS ESC1-15 certificate template/CA
+  misconfigurations
+- [[ntlm-relay-coercion]] — NTLM relay + coercion (PetitPotam, mitm6/WPAD)
+  and its relay targets
+- [[sccm-abuse]] — SCCM/MECM credential extraction and lateral movement
+- [[wds-mdt-discovery]] — WDS/MDT SCP discovery and unattend.xml credential
+  harvesting
+- [[shadow-credentials]] — msDS-KeyCredentialLink key-trust abuse for
+  passwordless takeover + NT hash recovery
+- [[ad-trust-attacks]] — forest trust SID filtering and its bypasses
+- [[gpo-abuse]] — GPO edit-rights as a domain-wide code execution primitive
+- [[ad-persistence]] — DCShadow/Skeleton Key/AdminSDHolder domain-dominance
+  persistence
+- [[pkinit-unpac-the-hash]] — certificate-based Kerberos pre-auth and NT
+  hash recovery, the hub linking AD CS attacks back to NTLM
+- [[pass-the-key]] — reuse a captured AES/RC4 Kerberos key to mint a fresh,
+  legitimate TGT (quieter than PtH/PtT/Golden)
+- [[diamond-ticket]] — Golden Ticket forged with the AES128 krbtgt key to
+  survive a single `krbtgt` rotation
+- [[kerberos-pac]] — the Privilege Attribute Check blob the KDC signs; PAC
+  forging, PAC CREDENTIAL_INFO NT-hash recovery
+- [[kerberos-encryption-types]] — RC4 (0x17) vs AES128 (0x11) vs AES256
+  (0x12): the etype downgrade/upgrade that drives roasting and forgery
+- [[kerberos-preauth]] — AS-REQ pre-authentication; disabled → AS-REP
+  roasting, and the preauth types
+- [[s4u2self-s4u2proxy]] — the S4U2Self/S4U2Proxy service-for-user /
+  service-for-service primitives under delegation
+- [[honeytokens]] — AD canary credentials/certs/objects that fire on touch
+- [[ntds-dit]] — the DC's directory database; offline/online dump for all
+  account secrets
+- [[lsass]] — the LSASS credential cache; the in-memory hash/key/password
+  source
+- [[sam-database]] — the local SAM; offline NTLM-hash store per machine
+- [[laps]] — Local Admin Password Solution; per-machine admin password and
+  who can read it
+- [[sid-history]] — the `sidHistory` attribute; write a privileged group SID
+  to escalate
+- [[mitm6-ipv6-relay]] — the IPv6 MITM/relay (WPAD → LDAPS) that forces
+  credential-less NTLM for RBCD/AD CS
+- [[krbrelay]] — the Kerberos+NTLM "worst of both worlds" relay
+- [[resource-based-constrained-delegation]] — RBCD
+  (`msDS-AllowedToActOnBehalfOfOtherIdentity`): write the attribute on a
+  machine, mint a TGS to it, lateral as yourself
+- [[service-principal-name]] — the SPN that ties an AD account to a Kerberos
+  service; the Kerberoast target surface
+- [[pass-the-hash-and-ticket]] — reuse a stolen NTLM hash (PtH) or
+  Kerberos ticket (PtT) directly to authenticate (no cracking)
+- [[overpass-the-hash]] — use a known NT hash to request a real (non-forged)
+  TGT via AS-REQ (the "overpass" of pass-the-hash)
+- [[pass-the-cert]] — authenticate to the KDC with a stolen/valid X.509 cert
+  (PKINIT) without the private-key password
+- [[smb]] — the file/printer sharing protocol: signing (the relay control),
+  lateral exec (psexec/wmiexec), the SMBv1/anonymous surface
+- [[ldap]] — the directory protocol: enumeration + the relay target for RBCD/
+  ACL/ownership writes; signing + channel binding as the controls
+- [[ccache]] — the Kerberos ticket wallet (.ccache/.kirbi): dump/inject/forge
+  the identity a tool authenticates as
+- [[service-account]] — user vs service vs machine account taxonomy; which
+  attack applies to which account (roast/RBCD/silver/coerce)
+- [[tgt-tgs]] — TGT vs TGS: the two ticket types, their keys/lifetimes, and
+  which attacks hit which (Golden/Silver/PtK/Kerberoast/RBCD)
+- [[ad-tier-model]] — the Tier 0/1/2 trust model itself: what's in each tier,
+  the trust-flow rule, PAWs; the frame every path note is measured against
+- [[remote-execution]] — Windows remote-exec transports (psexec/wmiexec/
+  smbexec/atexec/WinRM/PSRemoting/RDP) + the detection per channel
+- [[printer-bug]] — CVE-2021-34527 Print Spooler RPC coercion (the spooler
+  side of the coercion family, alongside PetitPotam)
+- [[wpad]] — WPAD autoconfig: the ambient, no-prompt NTLM capture
+  (evilwpad / mitm6) that feeds RBCD relays
+- [[domain-controller]] — what a DC is, the five FSMO roles, DSRM; why DC =
+  Tier 0 and the DC as the end-game target
+- [[ad-structure]] — the AD hierarchy glossary: objects/OUs/domain/tree/
+  forest/site, SIDs, DNs; why the structure dictates the attacks
+- [[dcshadow]] — persist via a rogue AD replication partner (or a shadow DC /
+  DSRM backdoor); replication-delivered writes that mute the LDAP audit
+- [[skeleton-key]] — the DC LSASS memory patch that accepts a static master
+  key; survives krbtgt rotation
+
+## Entities
+
+### Tools
+
+- [[rubeus]] — Go Kerberos attack tool (asktgt/ask, PtK, Golden/Diamond
+  tickets, triage)
+- [[mimikatz]] — the Swiss-army credential dumper (logonpasswords,
+  kerberos::golden, dcsync)
+- [[impacket]] — Python protocol toolkit (secretsdump, psexec, ticketer,
+  GetST, etc.)
+- [[secretsdump]] — NTDS/SAM dumper: remote DCSync (`-just-dc-user krbtgt`)
+  + offline VSS-hive parsing (gMSA + trust keys in the output)
+- [[certipy]] — AD CS attack tool (find/find-ca, req)
+- [[bloodhound]] — AD attack-path graph (SharpHound ingest, path queries)
+- [[powerview]] — PowerShell AD enumeration (Get-DomainObject, ACL queries)
+- [[petitpotam]] — the MS-EFSRPC NTLM-relay coercion trigger
+- [[ntlmrelayx]] — the NTLM relay engine (AD CS, RBCD, addcomputer targets)
+- [[mitm6]] — the IPv6 MITM/relay tool (WPAD, LDAPS RBCD)
+- [[whisker]] — Shadow Credentials tool (plant/UnPAC the NT hash)
+- [[crackmapexec]] — NetExec/CME mass scanning + execution (SMB/WinRM)
+- [[hashcat]] — GPU offline password cracker (the roast/dump hash modes)
+- [[john-the-ripper]] — CPU offline cracker (the JtR formats for
+  kerberoast/AS-REP/NTLM/krbtgt)
+- [[kerbrute]] — Kerberos attack tool (kerberoast, asrep, ptk, TGT brute)
+- [[dasync]] — DCSync via MS-DRSR to a local DB (the targeted dcsync tool)
+- [[powerupack]] — the Windows offensive suite (Privesc, SharpGPOAbuse,
+  GPOHound)
+- [[sharp-gpo-abuse]] — write malicious GPO preferences for linked-machine
+  code exec
+- [[gpohound]] — GPO attack-surface enumeration (writable GPOs → linked
+  targets)
+- [[mvictor]] — SCCM/MECM lateral movement + credential extraction
+- [[pxethief]] — steal SCCM/WDS PXE-boot credentials
+- [[wdsfilecrawler]] — crawl the WDS/MDT deployment share for answer-file
+  creds
+- [[certify]] — Go AD CS attack tool (find/req; the Go twin of certipy)
+- [[responder]] — LLMNR/NBNS/mDNS NTLM capture + auto-relay to LDAP (-A RBCD)
+- [[evilwpad]] — rogue WPAD (PAC serve + NTLM capture + LDAP/RBCD relay), Go
+- [[adrecon]] — .NET AD recon (objects, ACLs, replication rights, trusts)
+- [[krb5pac]] — Kerberos PAC manipulation (UnPAC the hash, SID History,
+  RBCD TGS forgery)
+
+### CVEs
+
+- [[cve-2020-0665]] — forest trust transitivity bypass (LSASS hook,
+  local-SID injection)
+- [[cve-2022-26923]] — AD CS dNSHostName → DC machine cert (ESC12)
+- [[cve-2024-49019]] — "EKUwu" AD CS V1 template application-policy abuse
+  (ESC15)
+
+### Researchers / References
+
+- [[dirkjanm]] — NTLM relay / RBCD / mitm6 researcher (dirkjanm.io)
+- [[specterops]] — BloodHound + AD CS ESC1-15 + Diamond Ticket / honeytokens
+- [[ired-team]] — primary AD attack+detection reference
+- [[internalallthethings]] — swisskyrepo hands-on AD/SCCM/WDS reference
+- [[hideandsec]] — Shadow Credentials / PKINIT researcher (hideandsec.sh)
+- [[ly4k]] — this wiki's author (thehackersbrain); creator of certipy,
+  Whisker, BerserkArch; founder of Cyber Craft Labs
+
+### Projects
+
+- [[berserkarch]] — the security-focused Arch-based Linux distro (the
+  author's working environment)
+- [[cyber-craft-labs]] — the author's security R&D lab
+
+## Notes
+
+- [[path-genericwrite-to-dcsync]] — GenericWrite/ACL → Shadow Credentials →
+  DCSync chain (BloodHound-driven privesc to domain dominance)
+- [[path-unconstrained-delegation-to-domain-admin]] — Coercion →
+  Unconstrained Delegation → DCSync → Golden Ticket → persistence
+- [[path-gpo-write-to-domain-admin]] — Writable GPO linked to DC OU → code
+  exec on DCs → Domain Admin
+- [[path-cross-forest-trust-pivot]] — Forest A krbtgt → SID history trust
+  pivot → Forest B Enterprise Admin
+- [[path-esc1-template-to-domain-admin]] — Enrollment rights on an ESC1
+  cert template → Administrator cert → Domain Admin
+- [[path-sccm-naa-to-domain-admin]] — Local admin on any SCCM client →
+  Network Access Account recovery → Domain Admin
+- [[path-pass-the-key-to-domain-admin]] — LSASS key → Pass the Key → DCSync
+  → Golden Ticket → Domain Admin
+- [[path-diamond-ticket-to-domain-admin]] — DCSync AES128 → Diamond Ticket →
+  durable (rotation-surviving) Domain Admin
+- [[path-golden-ticket-to-domain-admin]] — DCSync/offline-dump krbtgt →
+  Golden Ticket (AES256, DA SID) → Domain Admin → persistence
+- [[path-sid-history-to-enterprise-admin]] — GenericWrite on a user → write
+  EA SID into sidHistory → Enterprise Admin
+- [[path-laps-to-domain-admin]] — LAPS password read → local admin on a
+  Tier-0 box → DCSync → Domain Admin
+- [[path-kerberoast-to-domain-admin]] — Kerberoast SPN accounts → crack a
+  service account holding a DCSync right → krbtgt → Golden Ticket → DA
+- [[path-esc8-petitpotam-to-dcsync]] — PetitPotam coercion → NTLM relay to
+  AD CS → machine cert for a DC → DCSync → Golden Ticket → DA (no creds)
+- [[path-mitm6-rbcd-to-local-admin]] — mitm6 coercion → NTLM relay to LDAP →
+  RBCD attr on a target → lateral (local admin) to it
+- [[path-shadow-credentials-to-nt-hash]] — GenericWrite on an account → plant
+  shadow cred → PKINIT → UnPAC the NT hash → domain dominance
+- [[path-asrep-roast-to-domain-admin]] — AS-REP roast a preauth-disabled
+  account → crack its password → DCSync/Golden → Domain Admin
+- [[path-constrained-delegation-to-domain-admin]] — KCD (TrustedToAuth +
+  high-priv SPN) → Kerberoast the service → S4U impersonate Administrator →
+  Tier-0 box → Domain Admin
+- [[path-pass-the-hash-to-domain-admin]] — dumped NT hash → PtH lateral to a
+  Tier-0 box → DCSync → Golden Ticket → Domain Admin
+- [[path-overpass-the-hash-to-local-admin]] — local-admin NT hash → Overpass
+  (real KDC TGT, no krbtgt) → Kerberos logon → local admin on the target
+- [[path-silver-ticket-to-local-admin]] — forge a TGS with a service/machine
+  secret + SPN (no DC) → access a specific service as Administrator
+- [[path-rbcd-to-domain-admin]] — RBCD on a DC → S4U2Proxy impersonate a DA
+  on the DC → DCSync → Golden Ticket → Domain Admin

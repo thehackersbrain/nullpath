@@ -11,14 +11,14 @@ const pageSchema = z.object({
 
 const mk = (dir: string) =>
   defineCollection({
-    loader: glob({ pattern: "**/*.md", base: `../wiki/${dir}` }),
+    loader: glob({ pattern: "**/*.md", base: `./wiki/${dir}` }),
     schema: pageSchema,
   });
 
 // Root-level meta files (log.md, index.md) have no frontmatter, so use a
 // fully-optional schema.
 const meta = defineCollection({
-  loader: glob({ pattern: "{index,log}.md", base: "../wiki" }),
+  loader: glob({ pattern: "{index,log}.md", base: "./wiki" }),
   schema: z.object({
     title: z.string().optional(),
     type: z.string().optional(),
